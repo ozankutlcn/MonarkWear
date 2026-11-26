@@ -1,0 +1,505 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sepet — Monark Wear | Demo</title>
+<meta name="description" content="Monark Wear sepet. Siparişini WhatsApp'tan ver ya da Shopier ile öde. 2.999 TL ve üzeri ücretsiz kargo.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#0B0B0B">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/site.css">
+<style>
+/* ==========================================================================
+   Sepet only
+   ========================================================================== */
+.cart-page{ padding-bottom:var(--sec); }
+.cart-layout{ display:grid; grid-template-columns:minmax(0, 1fr) minmax(340px, 440px); gap:clamp(32px, 5vw, 88px); align-items:start; }
+.cart-main{ min-width:0; }
+
+/* Free-shipping tape: shared .shipbar, scaled up for the page */
+.tape{ position:relative; padding:20px 20px 22px; background:var(--surface); margin-bottom:8px; }
+.tape .shipbar{ gap:14px; }
+.tape .shipbar__text{ font-stretch:75%; font-weight:700; text-transform:uppercase; letter-spacing:.04em; font-size:16px; line-height:1.2; }
+.tape .shipbar__text b{ display:inline-block; background:var(--accent); padding:3px 6px 1px; margin-inline:2px; transform:rotate(-1.5deg); }
+.tape .shipbar__track{ height:12px; background:var(--white); }
+.tape__scale{ display:flex; justify-content:space-between; margin-top:8px; font-size:12px; color:var(--muted); font-variant-numeric:tabular-nums; }
+
+.lines-head{ display:flex; justify-content:space-between; align-items:center; gap:16px; padding:28px 0 14px; border-bottom:1px solid var(--ink); }
+.lines-head .label{ color:var(--muted); }
+.cart-main .clines .cline:first-child{ padding-top:24px; }
+.cart-main .cline__img{ width:120px; }
+.lines-foot{ display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap; padding-top:20px; }
+.linkbtn{ min-height:40px; font-size:13px; color:var(--muted); text-decoration:underline; text-underline-offset:3px; }
+.linkbtn:hover{ color:var(--ink); }
+
+/* Summary + checkout */
+.summary{ display:grid; gap:28px; }
+.summary__box{ border-top:1px solid var(--ink); padding-top:20px; display:grid; gap:14px; }
+.summary__box h2{ margin-bottom:4px; }
+.sumrow .muted{ color:var(--muted); font-weight:500; }
+.sumrow--total{ border-top:1px solid var(--line); padding-top:16px; margin-top:4px; font-size:22px; }
+.sumrow--total small{ display:block; font-size:12px; font-weight:500; color:var(--muted); }
+.note-count{ font-variant-numeric:tabular-nums; }
+.note-row .textarea{ min-height:96px; }
+
+.checkout{ display:grid; gap:0; border-top:1px solid var(--ink); }
+.checkout__title{ font-size:clamp(40px, 4vw, 56px); padding:20px 0 18px; }
+.co-opt{ display:grid; gap:12px; padding:20px 0 24px; border-top:1px solid var(--line); }
+.co-opt__head{ display:flex; align-items:center; gap:12px; }
+.co-opt__n{ display:grid; place-items:center; width:28px; height:28px; background:var(--ink); color:var(--white); font-stretch:75%; font-weight:700; font-size:13px; flex:none; }
+.co-opt--wa .co-opt__n{ background:var(--accent); color:var(--ink); }
+.co-opt__head h3{ font-stretch:75%; font-weight:800; text-transform:uppercase; letter-spacing:.02em; font-size:18px; line-height:1.1; }
+.co-opt p{ font-size:14px; color:var(--muted); line-height:1.5; }
+.co-opt .btn{ width:100%; }
+.secure{ display:flex; align-items:flex-start; gap:10px; font-size:13px; color:var(--ink); font-weight:600; }
+.secure .icon{ width:18px; height:18px; margin-top:1px; }
+.preview summary{ display:inline-flex; align-items:center; gap:6px; min-height:40px; cursor:pointer; list-style:none; font-size:13px; color:var(--muted); text-decoration:underline; text-underline-offset:3px; }
+.preview summary::-webkit-details-marker{ display:none; }
+.preview summary:hover{ color:var(--ink); }
+.preview summary .icon{ width:16px; height:16px; transition:transform .2s var(--ease); }
+.preview[open] summary .icon{ transform:rotate(180deg); }
+.preview pre{ margin:6px 0 0; padding:14px 16px; background:var(--surface); font:inherit; font-size:13px; line-height:1.55; white-space:pre-wrap; overflow-wrap:anywhere; max-height:260px; overflow:auto; }
+
+/* Empty */
+.cart-empty{ display:grid; grid-template-columns:minmax(0, 7fr) minmax(0, 5fr); gap:clamp(24px, 4vw, 64px); align-items:start; padding-block:clamp(28px, 3vw, 40px) 0; border-top:1px solid var(--ink); }
+.cart-empty__title{ font-size:clamp(48px, 6.4vw, 108px); }
+.cart-empty__title span{ display:inline-block; background:var(--accent); padding:.08em .12em 0; margin-left:-.04em; transform:rotate(-1.5deg); transform-origin:left bottom; }
+.cart-empty__side{ display:grid; gap:20px; justify-items:start; }
+.cart-empty__side p{ font-size:16px; line-height:1.5; max-width:40ch; }
+.cart-empty__cats{ display:flex; flex-wrap:wrap; gap:4px; }
+
+.rec{ padding-top:clamp(56px, 7vw, 104px); }
+.rec .sec-head h2{ font-size:clamp(40px, 5vw, 80px); }
+
+/* Mobile checkout bar */
+.mbar{ display:none; }
+@media (max-width:899px){
+  .cart-layout{ grid-template-columns:1fr; }
+  .cart-empty{ grid-template-columns:1fr; align-items:start; }
+  .mbar{
+    position:fixed; left:0; right:0; bottom:0; z-index:39;
+    display:flex; align-items:center; justify-content:space-between; gap:12px;
+    padding:10px 12px calc(10px + env(safe-area-inset-bottom)) 16px;
+    background:var(--white); border-top:1px solid var(--ink);
+    transition:transform .25s var(--ease);
+  }
+  .mbar[hidden]{ display:none!important; }
+  .mbar.is-off{ transform:translateY(110%); visibility:hidden; transition:transform .25s var(--ease), visibility 0s linear .25s; }
+  .mbar__sum{ display:grid; line-height:1.15; }
+  .mbar__sum small{ font-size:12px; color:var(--muted); }
+  .mbar__sum b{ font-weight:800; font-size:18px; font-variant-numeric:tabular-nums; }
+  .mbar .btn{ min-height:48px; padding:0 18px; }
+  body.has-mbar .wa-float{ bottom:calc(84px + env(safe-area-inset-bottom)); transition:bottom .25s var(--ease); }
+  body.has-mbar.mbar-off .wa-float{ bottom:calc(16px + env(safe-area-inset-bottom)); }
+  body.has-mbar .toast{ bottom:calc(84px + env(safe-area-inset-bottom)); }
+  body.has-mbar .footer{ padding-bottom:72px; }
+}
+@media (max-width:767px){
+  .cart-main .cline--lg{ grid-template-columns:92px 1fr; gap:14px; padding:20px 0; }
+  .cart-main .cline__img{ width:92px; }
+  .cart-main .cline--lg .cline__name, .cart-main .cline--lg .cline__price{ font-size:15px; }
+  .cart-main .cline__top{ flex-direction:column; gap:4px; }
+  .tape{ padding:16px 16px 18px; }
+  .tape .shipbar__text{ font-size:14px; }
+  .checkout__title{ font-size:44px; }
+}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 21 21"/></symbol>
+  <symbol id="i-bag" viewBox="0 0 24 24"><path d="M4 8h16l-1 13H5L4 8Z"/><path d="M8.5 8V6.5a3.5 3.5 0 0 1 7 0V8"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4 12h15M13 6l6 6-6 6"/></symbol>
+  <symbol id="i-arrow-l" viewBox="0 0 24 24"><path d="M20 12H5M11 6l-6 6 6 6"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="M5 5l14 14M19 5 5 19"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M3 8h18M3 16h18"/></symbol>
+  <symbol id="i-pause" viewBox="0 0 24 24"><path d="M8 5v14M16 5v14"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 5l12 7-12 7V5Z"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></symbol>
+  <symbol id="i-truck" viewBox="0 0 24 24"><path d="M2 6h12v10H2zM14 10h4l3 3v3h-7"/><circle cx="6" cy="18" r="1.8"/><circle cx="17" cy="18" r="1.8"/></symbol>
+  <symbol id="i-store" viewBox="0 0 24 24"><path d="M3 9l1.5-5h15L21 9M3 9h18M3 9v11h18V9M9 20v-6h6v6"/></symbol>
+  <symbol id="i-swap" viewBox="0 0 24 24"><path d="M4 8h14l-3-3M20 16H6l3 3"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/></symbol>
+  <symbol id="i-zoom" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 21 21M10.5 7.5v6M7.5 10.5h6"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></symbol>
+  <symbol id="i-ig" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18"/><circle cx="12" cy="12" r="4"/><path d="M17.5 6.5h.01"/></symbol>
+  <symbol id="i-reel" viewBox="0 0 24 24"><path d="M8 5v14l11-7L8 5Z"/></symbol>
+  <symbol id="i-wa" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.050 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></symbol>
+</svg>
+
+<a class="skip" href="#main">İçeriğe geç</a>
+
+<!-- Duyuru bandı (shared) -->
+<div class="marquee" role="region" aria-label="Duyurular">
+  <div class="marquee__viewport">
+    <div class="marquee__track">
+      <ul class="marquee__list">
+        <li>2.999 TL ve üzeri ücretsiz kargo</li>
+        <li>7 yıllık tecrübe</li>
+        <li>WhatsApp'tan sipariş</li>
+        <li>İsmimiz kalitemiz</li>
+        <li>2.999 TL ve üzeri ücretsiz kargo</li>
+        <li>7 yıllık tecrübe</li>
+        <li>WhatsApp'tan sipariş</li>
+        <li>İsmimiz kalitemiz</li>
+      </ul>
+      <ul class="marquee__list" aria-hidden="true">
+        <li>2.999 TL ve üzeri ücretsiz kargo</li>
+        <li>7 yıllık tecrübe</li>
+        <li>WhatsApp'tan sipariş</li>
+        <li>İsmimiz kalitemiz</li>
+        <li>2.999 TL ve üzeri ücretsiz kargo</li>
+        <li>7 yıllık tecrübe</li>
+        <li>WhatsApp'tan sipariş</li>
+        <li>İsmimiz kalitemiz</li>
+      </ul>
+    </div>
+  </div>
+  <button class="marquee__toggle" type="button" aria-pressed="false" aria-label="Kayan duyuruyu durdur">
+    <svg class="icon i-pause" aria-hidden="true"><use href="#i-pause"/></svg>
+    <svg class="icon icon--fill i-play" aria-hidden="true"><use href="#i-play"/></svg>
+  </button>
+</div>
+
+<!-- Header (shared) -->
+<header class="header" id="top">
+  <div class="wrap header__inner">
+    <div class="header__left">
+      <nav class="nav" aria-label="Ana menü">
+        <a href="koleksiyon.html?kat=fleece">Fleece</a>
+        <a href="koleksiyon.html?kat=esofman">Takım</a>
+        <a href="koleksiyon.html?kat=ceket">Ceket</a>
+        <a href="koleksiyon.html?kat=sweat">Sweat</a>
+        <a href="magaza.html">Mağaza</a>
+      </nav>
+      <button class="hbtn menu-btn" type="button" data-open="menu" aria-haspopup="dialog">
+        <svg class="icon" aria-hidden="true"><use href="#i-menu"/></svg><span class="label-text">Menü</span>
+      </button>
+    </div>
+    <a class="wordmark" href="index.html" aria-label="Monark Wear ana sayfa">MONARK</a>
+    <div class="header__right">
+      <button class="hbtn hbtn--search" type="button" data-open="search" aria-haspopup="dialog">
+        <svg class="icon" aria-hidden="true"><use href="#i-search"/></svg><span class="label-text">Ara</span>
+      </button>
+      <button class="hbtn" type="button" data-open="cart" aria-haspopup="dialog" aria-label="Sepet, 0 ürün">
+        <svg class="icon" aria-hidden="true"><use href="#i-bag"/></svg><span class="label-text">Sepet</span><span class="count tnum" data-cart-count aria-hidden="true">0</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- Page-only icon -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="i-lock" viewBox="0 0 24 24"><path d="M5 11h14v10H5zM8 11V7.5a4 4 0 0 1 8 0V11"/></symbol>
+</svg>
+
+<main id="main" class="cart-page">
+  <div class="wrap">
+
+    <div class="page-head">
+      <nav class="crumbs" aria-label="Konum">
+        <ol>
+          <li><a href="index.html">Ana Sayfa</a></li>
+          <li aria-current="page">Sepet</li>
+        </ol>
+      </nav>
+      <div class="page-head__row">
+        <h1 class="page-head__title display d1">Sepet</h1>
+        <p class="page-head__count label tnum" id="cart-count">0 ürün</p>
+      </div>
+    </div>
+
+    <p class="sr-only" id="cart-status" aria-live="polite"></p>
+
+    <!-- Filled -->
+    <div class="cart-layout" id="cart-filled" hidden>
+      <section class="cart-main" aria-labelledby="lines-title">
+        <div class="tape" id="tape"></div>
+
+        <div class="lines-head">
+          <h2 class="label" id="lines-title">Ürünler</h2>
+          <span class="label">Tutar</span>
+        </div>
+        <ul class="clines" id="lines" aria-label="Sepetteki ürünler"></ul>
+        <div class="lines-foot">
+          <a class="tlink" href="koleksiyon.html"><svg class="icon" aria-hidden="true"><use href="#i-arrow-l"/></svg> Alışverişe Devam</a>
+          <button class="linkbtn" type="button" id="clear-cart">Sepeti boşalt</button>
+        </div>
+      </section>
+
+      <aside class="summary" aria-label="Sipariş özeti ve ödeme">
+        <div class="summary__box">
+          <h2 class="label">Sipariş Özeti</h2>
+          <div class="sumrow"><span>Ara toplam <span class="muted" id="sum-n"></span></span><b id="sum-sub">0 TL</b></div>
+          <div class="sumrow"><span>Kargo</span><b id="sum-ship">—</b></div>
+          <p class="small" id="sum-ship-note">2.999 TL ve üzeri siparişlerde ücretsiz. Altında kargo ücreti Shopier'de hesaplanır; WhatsApp siparişinde sana bildirilir.</p>
+          <div class="sumrow sumrow--total"><span>Toplam<small id="sum-total-note">kargo hariç</small></span><b id="sum-total">0 TL</b></div>
+        </div>
+
+        <div class="form-row note-row">
+          <label class="form-label label" for="order-note">Sipariş notu <span class="opt-txt">opsiyonel</span></label>
+          <textarea class="textarea" id="order-note" maxlength="280" placeholder="Örn. hediye paketi olsun, akşam aranabilirim." aria-describedby="note-help"></textarea>
+          <p class="form-help" id="note-help">WhatsApp mesajına eklenir. <span class="note-count" id="note-count">0/280</span></p>
+        </div>
+
+        <section class="checkout" id="odeme" aria-labelledby="co-title">
+          <h2 class="checkout__title display" id="co-title">Siparişi Tamamla</h2>
+
+          <div class="co-opt co-opt--wa">
+            <div class="co-opt__head"><span class="co-opt__n" aria-hidden="true">1</span><h3>WhatsApp ile sipariş</h3></div>
+            <p>Sepetin hazır bir mesaj olarak WhatsApp'ta açılır: tüm ürünler, bedenler, toplam ve notun. Göndermeden önce düzenleyebilirsin.</p>
+            <a class="btn btn--accent" id="wa-order" href="https://wa.me/905000000000" target="_blank" rel="noopener">
+              <svg class="icon icon--fill" aria-hidden="true"><use href="#i-wa"/></svg> WhatsApp ile Sipariş Ver<span class="sr-only"> (yeni sekmede açılır)</span>
+            </a>
+            <details class="preview">
+              <summary>Mesajı önizle <svg class="icon" aria-hidden="true"><use href="#i-chev"/></svg></summary>
+              <pre id="wa-preview"></pre>
+            </details>
+          </div>
+
+          <div class="co-opt">
+            <div class="co-opt__head"><span class="co-opt__n" aria-hidden="true">2</span><h3>Shopier ile öde</h3></div>
+            <p>Shopier mağazamız yeni sekmede açılır. Sepetindeki ürünleri orada seçip ödemeni tamamlarsın.</p>
+            <a class="btn btn--ink" id="shopier" href="https://www.shopier.com/monarkwear" target="_blank" rel="noopener">
+              Shopier ile Öde <svg class="icon icon--arrow" aria-hidden="true"><use href="#i-arrow"/></svg><span class="sr-only"> (yeni sekmede açılır)</span>
+            </a>
+            <p class="secure"><svg class="icon" aria-hidden="true"><use href="#i-lock"/></svg> Ödeme Shopier güvencesiyle.</p>
+          </div>
+        </section>
+      </aside>
+    </div>
+
+    <!-- Empty -->
+    <section class="cart-empty" id="cart-empty" aria-labelledby="empty-title" hidden>
+      <h2 class="cart-empty__title display" id="empty-title">Sepetin <span>boş.</span></h2>
+      <div class="cart-empty__side">
+        <p>Ürünü seç, bedenini işaretle, sepete ekle. Siparişi WhatsApp'tan ya da Shopier'de tamamlarsın.</p>
+        <a class="btn btn--accent" href="koleksiyon.html">Koleksiyonu Gör <svg class="icon icon--arrow" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+        <nav class="cart-empty__cats" aria-label="Kategoriler" id="empty-cats"></nav>
+      </div>
+    </section>
+
+    <noscript><p class="small">Sepet bu demoda tarayıcıda tutulur ve JavaScript gerektirir. <a href="https://www.shopier.com/monarkwear" style="text-decoration:underline">Shopier mağazamızdan</a> sipariş verebilirsin.</p></noscript>
+
+    <!-- Recommended -->
+    <section class="rec" aria-labelledby="rec-title" id="rec">
+      <div class="sec-head">
+        <h2 class="display" id="rec-title">Bunlara da Bak</h2>
+        <a class="tlink" href="koleksiyon.html">Tüm Ürünler <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+      </div>
+      <ul class="rail" id="rail" aria-label="Önerilen ürünler, yatay kaydırılabilir"></ul>
+    </section>
+
+  </div>
+</main>
+
+<!-- Mobile checkout bar -->
+<div class="mbar" id="mbar" hidden>
+  <p class="mbar__sum"><small>Toplam</small><b id="mbar-total">0 TL</b></p>
+  <a class="btn btn--accent" href="#odeme">Siparişi Tamamla <svg class="icon icon--arrow" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+</div>
+
+<!-- Footer (shared) -->
+<footer class="footer on-dark">
+  <div class="wrap">
+    <div class="fcols">
+      <div class="fcol">
+        <h2 class="label">Alışveriş</h2>
+        <ul>
+          <li><a href="koleksiyon.html?kat=fleece">Fleece</a></li>
+          <li><a href="koleksiyon.html?kat=esofman">Eşofman Takımı</a></li>
+          <li><a href="koleksiyon.html?kat=ceket">Ceket</a></li>
+          <li><a href="koleksiyon.html?kat=sweat">Sweatshirt</a></li>
+          <li><a href="koleksiyon.html?kat=hoodie">Hoodie</a></li>
+          <li><a href="koleksiyon.html">Tüm Ürünler</a></li>
+        </ul>
+      </div>
+      <div class="fcol">
+        <h2 class="label">Yardım</h2>
+        <ul>
+          <li><a href="yardim.html#sss">Sıkça Sorulanlar</a></li>
+          <li><a href="yardim.html#kargo-iade">Kargo &amp; Değişim</a></li>
+          <li><a href="yardim.html#beden-rehberi">Beden Rehberi</a></li>
+          <li><a href="yardim.html#iletisim">İletişim</a></li>
+          <li><span>2.999 TL ve üzeri ücretsiz kargo</span></li>
+        </ul>
+      </div>
+      <div class="fcol">
+        <h2 class="label">Mağaza</h2>
+        <ul>
+          <li><a href="magaza.html">Mağazamız</a></li>
+          <li><span class="ph">[Adres eklenecek]</span></li>
+          <li><span class="ph">[Çalışma saatleri eklenecek]</span></li>
+        </ul>
+      </div>
+      <div class="fcol">
+        <h2 class="label">Sipariş &amp; Takip</h2>
+        <ul>
+          <li><a href="https://wa.me/905000000000" data-wa="Merhaba, sipariş vermek istiyorum." target="_blank" rel="noopener">WhatsApp'tan Sipariş</a></li>
+          <li><a href="https://www.shopier.com/monarkwear" target="_blank" rel="noopener">Shopier Mağazası</a></li>
+          <li><a href="https://www.instagram.com/monarkwearcom/" target="_blank" rel="noopener">Instagram · @monarkwearcom</a></li>
+          <li><span>42,1B takipçi</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="fbar">
+      <span>© 2026 Monark Wear · İsmimiz Kalitemiz</span>
+      <span>Fiyatlar, yorumlar ve bazı görseller demo amaçlıdır.</span>
+    </div>
+  </div>
+  <div class="fmark" aria-hidden="true"><span class="display">Monark</span></div>
+</footer>
+
+<a class="wa-float" href="https://wa.me/905000000000" data-wa="Merhaba, bilgi almak istiyorum." target="_blank" rel="noopener" aria-label="WhatsApp'tan yaz">
+  <svg class="icon icon--fill" aria-hidden="true"><use href="#i-wa"/></svg>
+</a>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/site.js"></script>
+<script>
+(function(){
+  "use strict";
+  var M = window.Monark; if (!M) return;
+  var FREE = M.config.freeShip || 2999;
+  function $(id){ return document.getElementById(id); }
+
+  var filled = $("cart-filled"), empty = $("cart-empty"), lines = $("lines"), tape = $("tape");
+  var note = $("order-note"), noteCount = $("note-count"), wa = $("wa-order"), preview = $("wa-preview");
+  var status = $("cart-status"), mbar = $("mbar");
+  $("shopier").href = M.config.shopier || "https://www.shopier.com/monarkwear";
+
+  var ORDER = ["nocta-tracksuit-takim","boxy-kot-ceket","uc-iplik-hoodie","double-face-jogger","kislik-sherpa-ceket",
+               "premium-esofman-takimi","uc-iplik-sweatshirt","premium-uc-iplik-sweatshirt","tech-fleece-takim",
+               "club-fleece-hoodie","agir-gramaj-tisort","grafik-baskili-tisort"];
+
+  /* empty-state category links */
+  $("empty-cats").innerHTML = M.data.categories.map(function(c){
+    return '<a class="tab" href="' + M.categoryUrl(c.id) + '">' + M.esc(c.name) + '</a>';
+  }).join("");
+
+  function updateWa(){
+    var msg = M.cartMessage(note.value);
+    wa.href = M.waLink(msg);
+    preview.textContent = msg;
+  }
+
+  var railKey = null;
+  function renderRail(items){
+    var inCart = {};
+    items.forEach(function(l){ inCart[l.id] = true; });
+    var list = ORDER.map(M.getProduct).filter(function(p){ return p && !inCart[p.id]; }).slice(0, 8);
+    var key = list.map(function(p){ return p.id; }).join(",");
+    if (key === railKey) return;           // keep DOM (and focus) stable when nothing changed
+    railKey = key;
+    $("rail").innerHTML = list.map(function(p){ return M.renderCard(p, { headingTag:"h3" }); }).join("");
+    $("rec-title").textContent = items.length ? "Kombini Tamamla" : "Bunlara da Bak";
+  }
+
+  function render(){
+    var items = M.cart.items(), n = M.cart.count(), sub = M.cart.subtotal(), has = items.length > 0;
+    $("cart-count").textContent = n + " ürün";
+    $("cart-count").hidden = !has;
+    filled.hidden = !has; empty.hidden = has;
+    document.title = (has ? "Sepet (" + n + ")" : "Sepet") + " — Monark Wear | Demo";
+    if (has){
+      var done = sub >= FREE;
+      tape.innerHTML = M.shipBar(sub) + '<div class="tape__scale" aria-hidden="true"><span>0 TL</span><span>' + M.formatPrice(FREE) + ' · ücretsiz kargo</span></div>';
+      lines.innerHTML = items.map(function(l){ return M.renderLine(l, { large:true }); }).join("");
+      $("sum-n").textContent = "(" + n + " ürün)";
+      $("sum-sub").textContent = M.formatPrice(sub);
+      $("sum-ship").textContent = done ? "Ücretsiz" : "Hesaplanacak";
+      $("sum-ship-note").hidden = done;
+      $("sum-total").textContent = M.formatPrice(sub);
+      $("sum-total-note").textContent = done ? "kargo dahil" : "kargo hariç";
+      $("mbar-total").textContent = M.formatPrice(sub);
+      updateWa();
+    }
+    mbar.hidden = !has;
+    document.body.classList.toggle("has-mbar", has);
+    renderRail(items);
+  }
+
+  function announce(){
+    var sub = M.cart.subtotal(), left = FREE - sub;
+    status.textContent = M.cart.count() ? ("Sepet güncellendi. Ara toplam " + M.formatPrice(sub) + ". " +
+      (left > 0 ? "Ücretsiz kargoya " + M.formatPrice(left) + " kaldı." : "Kargo ücretsiz.")) : "Sepetin boş.";
+  }
+
+  /* focus helpers after re-render */
+  function focusIn(key, sel){
+    var row = key && lines.querySelector('[data-key="' + (window.CSS && CSS.escape ? CSS.escape(key) : key) + '"]');
+    var el = row && row.querySelector(sel);
+    if (el){ el.focus(); return; }
+    var fallback = filled.hidden ? $("empty-title") : $("lines-title");
+    fallback.setAttribute("tabindex", "-1"); fallback.focus();
+  }
+
+  /* qty */
+  lines.addEventListener("change", function(e){
+    var inp = e.target.closest(".qty__val"); if (!inp) return;
+    var key = inp.closest(".qty").getAttribute("data-key");
+    var a = document.activeElement;
+    var step = a && a.classList.contains("qty__btn") ? a.getAttribute("data-step") : null;
+    M.cart.updateQty(key, inp.value);
+    focusIn(key, step ? '.qty__btn[data-step="' + step + '"]:not(:disabled)' : ".qty__val");
+    if (step && document.activeElement === document.body) focusIn(key, ".qty__val");
+    announce();
+  });
+
+  /* remove (with undo) */
+  lines.addEventListener("click", function(e){
+    var r = e.target.closest("[data-remove]"); if (!r) return;
+    var key = r.getAttribute("data-remove");
+    var gone = null;
+    M.cart.items().forEach(function(l){ if (l.key === key) gone = l; });
+    var row = r.closest(".cline"), next = row && (row.nextElementSibling || row.previousElementSibling);
+    var nextKey = next && next.getAttribute("data-key");
+    M.cart.remove(key);
+    focusIn(nextKey, ".cline__remove");
+    announce();
+    if (gone){
+      M.toast("Sepetten kaldırıldı", { text: gone.product.name + " · " + gone.color + " · " + gone.size,
+        action:{ label:"Geri Al", onClick:function(){ M.cart.add(gone.id, { color:gone.color, size:gone.size, qty:gone.qty }); announce(); } } });
+    }
+  });
+
+  $("clear-cart").addEventListener("click", function(){
+    var snap = M.cart.items();
+    M.cart.clear();
+    focusIn(null);
+    announce();
+    M.toast("Sepet boşaltıldı", { action:{ label:"Geri Al", onClick:function(){
+      snap.forEach(function(l){ M.cart.add(l.id, { color:l.color, size:l.size, qty:l.qty }); });
+      announce();
+    } } });
+  });
+
+  note.addEventListener("input", function(){
+    noteCount.textContent = note.value.length + "/280";
+    updateWa();
+  });
+
+  /* any cart change (drawer, quick-add in rail, other tab) re-renders the page */
+  document.addEventListener("monark:cart", render);
+
+  /* mobile bar hides while the checkout block is on screen */
+  if ("IntersectionObserver" in window){
+    new IntersectionObserver(function(entries){
+      var on = entries[0].isIntersecting;
+      mbar.classList.toggle("is-off", on);
+      document.body.classList.toggle("mbar-off", on);
+    }, { threshold:0.15 }).observe($("odeme"));
+  }
+
+  render();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,647 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Monark Wear — Fleece Sezonu | Demo</title>
+<meta name="description" content="Monark Wear demo mağaza. Fleece, eşofman takımı, ceket, sweatshirt, hoodie. 2.999 TL ve üzeri ücretsiz kargo.">
+<meta name="theme-color" content="#0B0B0B">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://images.unsplash.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/site.css">
+<style>
+/* ==========================================================================
+   Home only
+   ========================================================================== */
+
+/* Hero */
+.hero{
+  position:relative; isolation:isolate; overflow:hidden;
+  height:min(calc(100svh - var(--mq)), 900px); min-height:600px;
+  color:var(--white); background:#2a2a28;
+  display:flex; align-items:flex-end;
+}
+.hero__img{ position:absolute; inset:0; z-index:-2; width:100%; height:100%; object-fit:cover; object-position:50% 35%; }
+.hero::before{
+  content:""; position:absolute; inset:0; z-index:-1;
+  background:
+    linear-gradient(to top, rgba(0,0,0,.5) 0%, rgba(0,0,0,0) 40%),
+    linear-gradient(to bottom, rgba(0,0,0,.28) 0, rgba(0,0,0,0) 140px);
+}
+.hero__inner{
+  width:100%; display:grid; grid-template-columns:1fr minmax(260px, 340px); align-items:end; gap:40px;
+  padding-bottom:clamp(28px, 4vw, 56px);
+}
+.hero__title{ font-size:clamp(64px, 15vw, 232px); }
+.hero__title .line{ display:block; }
+.hero__title .line > span{
+  display:block;
+  animation:reveal 700ms var(--ease) both;
+  animation-delay:calc(var(--i, 0) * 120ms + 150ms);
+}
+@keyframes reveal{
+  from{ clip-path:inset(100% 0 -.1em 0); transform:translateY(.28em); }
+  to{ clip-path:inset(-.2em 0 -.1em 0); transform:none; }
+}
+.hero__aside{ display:grid; gap:20px; padding-bottom:.6vw; }
+.hero__caption{ font-size:16px; line-height:1.45; font-weight:500; max-width:30ch; }
+.hero__ctas{ display:flex; flex-wrap:wrap; align-items:center; gap:12px 24px; }
+.hero__ctas .btn--outline-light{ display:none; }
+@media (max-width:899px){
+  .hero{ height:88svh; min-height:560px; }
+  .hero__img{ object-position:50% 30%; }
+  .hero__inner{ grid-template-columns:1fr; gap:20px; padding-bottom:24px; }
+  .hero__aside{ padding-bottom:0; gap:16px; }
+  .hero__ctas{ display:grid; grid-template-columns:1fr; gap:10px; }
+  .hero__ctas .btn{ width:100%; }
+  .hero__ctas .tlink{ display:none; }
+  .hero__ctas .btn--outline-light{ display:inline-flex; }
+}
+
+/* Big-word split — each panel composes two real IG portraits (resolution rule) */
+.split{ display:grid; grid-template-columns:1fr 1fr; }
+.panel{
+  --w:clamp(64px, 15vw, 240px);
+  position:relative; display:flex; flex-direction:column; height:80svh; min-height:520px; max-height:960px;
+  color:var(--white); background:var(--ink); overflow:hidden;
+}
+.panel + .panel{ border-left:1px solid var(--ink); }
+.panel__media{ position:relative; flex:1; overflow:hidden; background:#2a2a28; display:grid; grid-template-columns:1fr 1fr; gap:2px; }
+.panel__media img{ width:100%; height:100%; min-height:0; object-fit:cover; transition:transform .6s var(--ease); }
+.panel__media::after{ content:""; position:absolute; inset:0; background:linear-gradient(to top, rgba(0,0,0,.35), rgba(0,0,0,0) 35%); pointer-events:none; }
+.panel__word{
+  position:absolute; left:var(--pad); top:0; z-index:2; white-space:nowrap;
+  font-size:var(--w); line-height:.86; transform:translateY(-54%);
+}
+.panel__foot{
+  position:relative; display:flex; justify-content:space-between; align-items:flex-end; gap:16px;
+  padding:calc(var(--w) * .46 + 20px) var(--pad) 24px;
+}
+.panel__foot p{ font-size:15px; color:rgba(255,255,255,.72); }
+.panel__go{ display:inline-flex; align-items:center; gap:10px; white-space:nowrap; }
+.panel__go .icon{ transition:transform .25s var(--ease); }
+@media (hover:hover) and (pointer:fine){
+  .panel:hover .panel__media img{ transform:scale(1.03); }
+  .panel:hover .panel__go .icon{ transform:translateX(4px); }
+}
+.panel:focus-visible{ outline:2px solid var(--accent); outline-offset:-6px; }
+@media (max-width:767px){
+  .split{ grid-template-columns:1fr; }
+  .panel{ --w:clamp(64px, 26vw, 140px); height:70svh; min-height:460px; }
+  .panel + .panel{ border-left:0; border-top:1px solid #222; }
+  .panel__foot{ padding-bottom:20px; }
+  .panel__foot p{ font-size:14px; }
+}
+
+/* Categories */
+.cats{ display:grid; grid-template-columns:repeat(7, 1fr); gap:var(--gap); }
+.cat{ display:block; }
+.cat__media{ aspect-ratio:3/4; background:var(--surface); overflow:hidden; }
+.cat__media img{ width:100%; height:100%; object-fit:cover; transition:transform .4s var(--ease); }
+.cat__row{ display:flex; justify-content:space-between; align-items:center; gap:8px; padding-top:14px; font-size:15px; }
+.cat__row .icon{ width:18px; height:18px; transition:transform .25s var(--ease); }
+@media (hover:hover) and (pointer:fine){
+  .cat:hover .cat__media img{ transform:scale(1.03); }
+  .cat:hover .cat__row .icon{ transform:translateX(4px); }
+}
+@media (max-width:1199px){
+  .cats-scroll{ margin-inline:calc(var(--pad) * -1); overflow-x:auto; scroll-snap-type:x mandatory; scrollbar-width:none; scroll-padding-inline:var(--pad); }
+  .cats-scroll::-webkit-scrollbar{ display:none; }
+  .cats{ display:flex; gap:var(--gap); padding-inline:var(--pad); width:max-content; }
+  .cat{ width:calc((100vw - var(--pad) - 3 * var(--gap)) / 4.3); scroll-snap-align:start; }
+}
+@media (max-width:767px){
+  .cats{ gap:8px; }
+  .cat{ width:calc((100vw - var(--pad) - 16px) / 2.3); }
+  .cat__row{ font-size:14px; }
+}
+
+/* Yeni Gelenler filters */
+.filters{ display:flex; gap:4px; flex-wrap:wrap; }
+.filter{
+  min-height:40px; padding:0 14px; border:1px solid var(--line);
+  font-stretch:75%; font-weight:700; text-transform:uppercase; letter-spacing:.04em; font-size:13px; line-height:1;
+  transition:background-color .2s, border-color .2s, color .2s;
+}
+.filter:hover{ border-color:var(--ink); }
+.filter[aria-pressed="true"]{ background:var(--ink); color:var(--white); border-color:var(--ink); }
+.grid-empty{ padding:48px 24px; background:var(--surface); }
+
+/* Campaign block (Vice City) — ink + yellow tape, art never stretched */
+.camp{ background:var(--ink); color:var(--white); overflow:hidden; }
+.camp__inner{ display:grid; grid-template-columns:7fr 5fr; gap:clamp(24px, 4vw, 64px); align-items:end; padding-top:var(--sec); }
+.camp__text{ display:grid; gap:28px; padding-bottom:var(--sec); align-content:end; }
+.camp__kicker{ color:rgba(255,255,255,.6); display:flex; align-items:center; gap:10px; }
+.camp__kicker::before{ content:""; width:10px; height:10px; background:var(--accent); }
+.camp__title{ font-size:clamp(64px, 10vw, 168px); }
+.camp__title .w1{ display:block; }
+.camp__title .w2{
+  display:inline-block; margin-top:.06em; margin-left:-.06em;
+  background:var(--accent); color:var(--ink); padding:.1em .14em .02em;
+  transform:rotate(-1.5deg); transform-origin:left bottom;
+}
+.camp__cap{ font-size:18px; line-height:1.45; font-weight:500; max-width:34ch; color:rgba(255,255,255,.85); }
+.camp__ctas{ display:flex; flex-wrap:wrap; align-items:center; gap:12px 28px; }
+.camp__media{ position:relative; max-width:560px; justify-self:end; width:100%; }
+.camp__media img{ width:100%; aspect-ratio:4/5; object-fit:cover; }
+.camp__media figcaption{ position:absolute; left:0; bottom:0; background:var(--ink); padding:10px 14px 0 0; font-size:12px; color:rgba(255,255,255,.6); }
+@media (max-width:899px){
+  .camp__inner{ grid-template-columns:1fr; gap:40px; }
+  .camp__text{ padding-bottom:0; }
+  .camp__media{ justify-self:stretch; max-width:none; margin-inline:calc(var(--pad) * -1); width:auto; }
+  .camp__media figcaption{ left:var(--pad); }
+  .camp__title{ font-size:clamp(56px, 17vw, 120px); }
+  .camp__ctas .btn{ width:100%; }
+}
+
+/* Sizden Gelenler */
+.reviews-nav{ display:flex; gap:4px; }
+.rnav{ width:48px; height:48px; display:grid; place-items:center; border:1px solid var(--ink); transition:background-color .2s, color .2s; }
+.rnav:hover:not(:disabled){ background:var(--ink); color:var(--white); }
+.rnav:disabled{ border-color:var(--line); color:var(--strike); cursor:default; }
+.reviews{
+  display:grid; grid-auto-flow:column; grid-auto-columns:calc((100% - 3 * var(--gap)) / 3.4); gap:var(--gap);
+  overflow-x:auto; scroll-snap-type:x mandatory; scrollbar-width:none;
+  margin-inline:calc(var(--pad) * -1); padding-inline:var(--pad); scroll-padding-inline:var(--pad);
+}
+.reviews::-webkit-scrollbar{ display:none; }
+.review{ scroll-snap-align:start; min-width:0; }
+.review__media{ aspect-ratio:4/5; background:var(--surface); overflow:hidden; }
+.review__media img{ width:100%; height:100%; object-fit:cover; }
+.review__body{ padding-top:18px; display:grid; gap:14px; }
+.review__quote{ font-size:18px; line-height:1.4; font-weight:500; max-width:36ch; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.review__meta{ display:flex; justify-content:space-between; gap:12px; font-size:13px; color:var(--muted); border-top:1px solid var(--line); padding-top:12px; }
+.review__meta b{ color:var(--ink); font-weight:700; font-stretch:75%; letter-spacing:.02em; font-size:14px; }
+@media (max-width:767px){
+  .reviews{ grid-auto-columns:78%; gap:8px; }
+  .reviews-nav{ display:none; }
+  .review__quote{ font-size:16px; }
+}
+
+/* Mağazamız — real storefront, kept under 1.4x of its 480px source */
+.store{ display:grid; grid-template-columns:5fr 7fr; gap:clamp(24px, 4vw, 64px); align-items:stretch; }
+.store__fig{ display:grid; gap:12px; align-content:start; }
+.store__media{ background:var(--surface); overflow:hidden; aspect-ratio:4/5; max-width:600px; }
+.store__media img{ width:100%; height:100%; object-fit:cover; object-position:50% 40%; }
+.store__head{ display:grid; gap:clamp(24px, 3vw, 40px); }
+.store__quote{ display:grid; gap:14px; padding-left:20px; border-left:4px solid var(--accent); }
+.store__quote p{ max-width:22ch; font-size:clamp(22px, 2.2vw, 32px); line-height:1.2; font-weight:600; letter-spacing:-.01em; }
+.store__quote footer{ color:var(--muted); }
+.store__info{ display:flex; flex-direction:column; justify-content:space-between; gap:40px; padding-block:8px; }
+.store__title{ font-size:clamp(56px, 8.2vw, 136px); }
+.store__dl{ display:grid; border-top:1px solid var(--ink); }
+.store__dl > div{ display:grid; grid-template-columns:140px 1fr; gap:16px; padding:16px 0; border-bottom:1px solid var(--line); }
+.store__dl dt{ color:var(--muted); padding-top:2px; }
+.store__dl dd{ font-size:16px; font-weight:500; }
+.store__ctas{ display:flex; flex-wrap:wrap; align-items:center; gap:16px 28px; margin-top:28px; }
+@media (max-width:899px){
+  .store{ grid-template-columns:1fr; }
+  .store__media{ max-width:none; }
+  .store__dl > div{ grid-template-columns:1fr; gap:6px; }
+  .store__ctas .btn{ width:100%; }
+}
+
+@media (prefers-reduced-motion:reduce){
+  .hero__title .line > span{ animation:none; }
+  .cat:hover .cat__media img, .panel:hover .panel__media img{ transform:none!important; }
+}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 21 21"/></symbol>
+  <symbol id="i-bag" viewBox="0 0 24 24"><path d="M4 8h16l-1 13H5L4 8Z"/><path d="M8.5 8V6.5a3.5 3.5 0 0 1 7 0V8"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4 12h15M13 6l6 6-6 6"/></symbol>
+  <symbol id="i-arrow-l" viewBox="0 0 24 24"><path d="M20 12H5M11 6l-6 6 6 6"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="M5 5l14 14M19 5 5 19"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M3 8h18M3 16h18"/></symbol>
+  <symbol id="i-pause" viewBox="0 0 24 24"><path d="M8 5v14M16 5v14"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 5l12 7-12 7V5Z"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></symbol>
+  <symbol id="i-truck" viewBox="0 0 24 24"><path d="M2 6h12v10H2zM14 10h4l3 3v3h-7"/><circle cx="6" cy="18" r="1.8"/><circle cx="17" cy="18" r="1.8"/></symbol>
+  <symbol id="i-store" viewBox="0 0 24 24"><path d="M3 9l1.5-5h15L21 9M3 9h18M3 9v11h18V9M9 20v-6h6v6"/></symbol>
+  <symbol id="i-swap" viewBox="0 0 24 24"><path d="M4 8h14l-3-3M20 16H6l3 3"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/></symbol>
+  <symbol id="i-zoom" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 21 21M10.5 7.5v6M7.5 10.5h6"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></symbol>
+  <symbol id="i-ig" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18"/><circle cx="12" cy="12" r="4"/><path d="M17.5 6.5h.01"/></symbol>
+  <symbol id="i-reel" viewBox="0 0 24 24"><path d="M8 5v14l11-7L8 5Z"/></symbol>
+  <symbol id="i-wa" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.050 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></symbol>
+</svg>
+
+<a class="skip" href="#main">İçeriğe geç</a>
+
+<!-- Duyuru bandı (shared) -->
+<div class="marquee" role="region" aria-label="Duyurular">
+  <div class="marquee__viewport">
+    <div class="marquee__track">
+      <ul class="marquee__list">
+        <li>2.999 TL ve üzeri ücretsiz kargo</li>
+        <li>7 yıllık tecrübe</li>
+        <li>WhatsApp'tan sipariş</li>
+        <li>İsmimiz kalitemiz</li>
+        <li>2.999 TL ve üzeri ücretsiz kargo</li>
+        <li>7 yıllık tecrübe</li>
+        <li>WhatsApp'tan sipariş</li>
+        <li>İsmimiz kalitemiz</li>
+      </ul>
+      <ul class="marquee__list" aria-hidden="true">
+        <li>2.999 TL ve üzeri ücretsiz kargo</li>
+        <li>7 yıllık tecrübe</li>
+        <li>WhatsApp'tan sipariş</li>
+        <li>İsmimiz kalitemiz</li>
+        <li>2.999 TL ve üzeri ücretsiz kargo</li>
+        <li>7 yıllık tecrübe</li>
+        <li>WhatsApp'tan sipariş</li>
+        <li>İsmimiz kalitemiz</li>
+      </ul>
+    </div>
+  </div>
+  <button class="marquee__toggle" type="button" aria-pressed="false" aria-label="Kayan duyuruyu durdur">
+    <svg class="icon i-pause" aria-hidden="true"><use href="#i-pause"/></svg>
+    <svg class="icon icon--fill i-play" aria-hidden="true"><use href="#i-play"/></svg>
+  </button>
+</div>
+
+<!-- Header (shared; home adds header--overlay) -->
+<header class="header header--overlay" id="top">
+  <div class="wrap header__inner">
+    <div class="header__left">
+      <nav class="nav" aria-label="Ana menü">
+        <a href="koleksiyon.html?kat=fleece">Fleece</a>
+        <a href="koleksiyon.html?kat=esofman">Takım</a>
+        <a href="koleksiyon.html?kat=ceket">Ceket</a>
+        <a href="koleksiyon.html?kat=sweat">Sweat</a>
+        <a href="magaza.html">Mağaza</a>
+      </nav>
+      <button class="hbtn menu-btn" type="button" data-open="menu" aria-haspopup="dialog">
+        <svg class="icon" aria-hidden="true"><use href="#i-menu"/></svg><span class="label-text">Menü</span>
+      </button>
+    </div>
+    <a class="wordmark" href="index.html" aria-label="Monark Wear ana sayfa">MONARK</a>
+    <div class="header__right">
+      <button class="hbtn hbtn--search" type="button" data-open="search" aria-haspopup="dialog">
+        <svg class="icon" aria-hidden="true"><use href="#i-search"/></svg><span class="label-text">Ara</span>
+      </button>
+      <button class="hbtn" type="button" data-open="cart" aria-haspopup="dialog" aria-label="Sepet, 0 ürün">
+        <svg class="icon" aria-hidden="true"><use href="#i-bag"/></svg><span class="label-text">Sepet</span><span class="count tnum" data-cart-count aria-hidden="true">0</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- 1. Hero (approved) -->
+  <section class="hero on-dark" id="hero" data-hero aria-labelledby="hero-title">
+    <img class="hero__img" src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=2000&q=80&auto=format&fit=crop" width="2000" height="1333" alt="Sarı eşofman takımlı model, basketbol sahasında" fetchpriority="high">
+    <div class="wrap hero__inner">
+      <h1 class="hero__title display" id="hero-title">
+        <span class="line"><span style="--i:0">Fleece</span></span>
+        <span class="line"><span style="--i:1">Sezonu.</span></span>
+      </h1>
+      <div class="hero__aside">
+        <p class="hero__caption">Tech Fleece, Club Fleece, Nocta tarz. Hepsi rafta.</p>
+        <div class="hero__ctas">
+          <a class="btn btn--accent" href="koleksiyon.html?kat=fleece">Koleksiyonu Gör <svg class="icon icon--arrow" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+          <a class="tlink" href="https://wa.me/905000000000" data-wa="Merhaba, fleece koleksiyonu hakkında bilgi almak istiyorum." target="_blank" rel="noopener">WhatsApp'tan Sor</a>
+          <a class="btn btn--outline-light" href="https://wa.me/905000000000" data-wa="Merhaba, fleece koleksiyonu hakkında bilgi almak istiyorum." target="_blank" rel="noopener"><svg class="icon icon--fill" aria-hidden="true"><use href="#i-wa"/></svg> WhatsApp'tan Sor</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. Big-word split: real IG imagery, two portraits per panel -->
+  <section class="split" aria-label="Öne çıkan kategoriler">
+    <a class="panel on-dark" href="koleksiyon.html?kat=esofman">
+      <div class="panel__media">
+        <img src="assets/ig/nocta-tracksuit.jpg" width="360" height="640" alt="" loading="lazy" style="object-position:50% 40%">
+        <img src="assets/ig/esofman-takimi-rack.jpg" width="361" height="640" alt="" loading="lazy" style="object-position:50% 55%">
+      </div>
+      <div class="panel__foot">
+        <span class="panel__word display" aria-hidden="true">Takım</span>
+        <p>Nocta, premium eşofman. Sınırlı stok.</p>
+        <span class="panel__go label"><span>Takımlar</span> <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></span>
+      </div>
+    </a>
+    <a class="panel on-dark" href="koleksiyon.html?kat=ceket">
+      <div class="panel__media">
+        <img src="assets/ig/kot-ceket-model.jpg" width="480" height="640" alt="" loading="lazy" style="object-position:55% 30%">
+        <img src="assets/ig/sherpa-ceket.jpg" width="480" height="640" alt="" loading="lazy" style="object-position:68% 50%">
+      </div>
+      <div class="panel__foot">
+        <span class="panel__word display" aria-hidden="true">Ceket</span>
+        <p>Boxy kot, kışlık sherpa.</p>
+        <span class="panel__go label"><span>Ceketler</span> <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></span>
+      </div>
+    </a>
+  </section>
+
+  <!-- 3. Kategoriler -->
+  <section class="sec" aria-labelledby="cat-title">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2 class="display d2" id="cat-title">Kategoriler</h2>
+        <a class="tlink" href="koleksiyon.html">Tüm Ürünler <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+      </div>
+      <div class="cats-scroll">
+        <ul class="cats">
+          <li><a class="cat" href="koleksiyon.html?kat=fleece">
+            <div class="cat__media"><img src="assets/ig/nocta-tracksuit.jpg" width="360" height="640" alt="" loading="lazy" style="object-position:50% 35%"></div>
+            <div class="cat__row label"><span>Fleece</span><svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></div>
+          </a></li>
+          <li><a class="cat" href="koleksiyon.html?kat=esofman">
+            <div class="cat__media"><img src="assets/ig/esofman-takimi-rack.jpg" width="361" height="640" alt="" loading="lazy" style="object-position:50% 55%"></div>
+            <div class="cat__row label"><span>Eşofman Takımı</span><svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></div>
+          </a></li>
+          <li><a class="cat" href="koleksiyon.html?kat=ceket">
+            <div class="cat__media"><img src="assets/ig/kot-ceket-rack.jpg" width="360" height="640" alt="" loading="lazy" style="object-position:60% 45%"></div>
+            <div class="cat__row label"><span>Ceket</span><svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></div>
+          </a></li>
+          <li><a class="cat" href="koleksiyon.html?kat=sweat">
+            <div class="cat__media"><img src="assets/ig/uc-iplik-sweatshirt.jpg" width="561" height="640" alt="" loading="lazy" style="object-position:68% 50%"></div>
+            <div class="cat__row label"><span>Sweatshirt</span><svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></div>
+          </a></li>
+          <li><a class="cat" href="koleksiyon.html?kat=hoodie">
+            <div class="cat__media"><img src="assets/ig/uc-iplik-hoodie.jpg" width="608" height="640" alt="" loading="lazy" style="object-position:70% 50%"></div>
+            <div class="cat__row label"><span>Hoodie</span><svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></div>
+          </a></li>
+          <li><a class="cat" href="koleksiyon.html?kat=alt">
+            <div class="cat__media"><img src="assets/ig/double-face-jogger.jpg" width="480" height="640" alt="" loading="lazy" style="object-position:62% 55%"></div>
+            <div class="cat__row label"><span>Jogger / Alt</span><svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></div>
+          </a></li>
+          <li><a class="cat" href="koleksiyon.html?kat=tisort">
+            <div class="cat__media"><img src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=600&q=80&auto=format&fit=crop" width="600" height="800" alt="" loading="lazy"></div>
+            <div class="cat__row label"><span>Tişört</span><svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></div>
+          </a></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. Yeni Gelenler (cards from data.js) -->
+  <section class="sec" id="yeni" aria-labelledby="new-title" style="padding-top:0">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2 class="display d2" id="new-title">Yeni Gelenler</h2>
+        <div class="sec-head__meta">
+          <div class="filters" role="group" aria-label="Ürünleri filtrele">
+            <button class="filter" type="button" data-set="all" aria-pressed="true">Tümü</button>
+            <button class="filter" type="button" data-set="takim" aria-pressed="false">Takım</button>
+            <button class="filter" type="button" data-set="ceket" aria-pressed="false">Ceket</button>
+            <button class="filter" type="button" data-set="ust" aria-pressed="false">Üst</button>
+          </div>
+          <a class="tlink" id="grid-all" href="koleksiyon.html">Tümünü Gör <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+        </div>
+      </div>
+      <p class="sr-only" id="grid-status" aria-live="polite"></p>
+      <ul class="grid" id="grid" aria-label="Yeni gelen ürünler"></ul>
+      <div class="grid-empty empty" id="grid-empty" hidden>
+        <p class="label">Bu filtrede ürün yok.</p>
+        <p class="small">WhatsApp'tan sor, rafta ne varsa söyleyelim.</p>
+        <a class="tlink" href="https://wa.me/905000000000" data-wa="Merhaba, rafta neler var?" target="_blank" rel="noopener">WhatsApp'tan Sor</a>
+      </div>
+      <noscript><p class="small" style="margin-top:16px">Ürünleri görmek için <a href="https://www.shopier.com/monarkwear" style="text-decoration:underline">Shopier mağazamızı</a> ziyaret edin.</p></noscript>
+    </div>
+  </section>
+
+  <!-- 5. Kampanya: Vice City (real IG campaign art, composed, not stretched) -->
+  <section class="camp on-dark" aria-labelledby="camp-title">
+    <div class="wrap camp__inner">
+      <div class="camp__text">
+        <p class="label camp__kicker">Kampanya · @monarkwearcom</p>
+        <h2 class="camp__title display" id="camp-title"><span class="w1">Vice City</span><span class="w2">Yeni Tarz.</span></h2>
+        <p class="camp__cap">“Vice City sokaklarında yeni bir tarz!” Kot ceketler ve track ceketler rafta.</p>
+        <div class="camp__ctas">
+          <a class="btn btn--accent" href="koleksiyon.html?kat=ceket">Ceketlere Bak <svg class="icon icon--arrow" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+          <a class="tlink" href="https://www.instagram.com/p/Df4lBostPLl/" target="_blank" rel="noopener">Gönderiyi Gör <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+        </div>
+      </div>
+      <figure class="camp__media">
+        <img src="assets/ig/vice-city-kampanya.jpg" width="512" height="640" alt="İllüstrasyon: kot ve track ceketli iki kişi, ellerinde MONARK WEAR kutuları, mor gökyüzü altında" loading="lazy">
+        <figcaption>Kampanya görseli · @monarkwearcom</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- 6. Sizden Gelenler (demo) -->
+  <section class="sec" aria-labelledby="rev-title">
+    <div class="wrap">
+      <div class="sec-head">
+        <div>
+          <h2 class="display d2" id="rev-title">Sizden Gelenler</h2>
+          <p class="note" style="margin-top:16px">Görseller ve yorumlar demo amaçlıdır.</p>
+        </div>
+        <div class="reviews-nav">
+          <button class="rnav" type="button" data-dir="-1" aria-label="Önceki yorumlar" aria-controls="reviews"><svg class="icon" aria-hidden="true"><use href="#i-arrow-l"/></svg></button>
+          <button class="rnav" type="button" data-dir="1" aria-label="Sonraki yorumlar" aria-controls="reviews"><svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></button>
+        </div>
+      </div>
+      <ul class="reviews" id="reviews" tabindex="0" aria-label="Müşteri yorumları, yatay kaydırılabilir">
+        <li class="review">
+          <div class="review__media"><img src="https://images.unsplash.com/photo-1622519407650-3df9883f76a5?w=600&q=80&auto=format&fit=crop" width="600" height="750" alt="Siyah tişörtlü müşteri, duvar önünde" loading="lazy"></div>
+          <div class="review__body">
+            <p class="review__quote">“Kumaşı beklediğim gibi çıktı, kalıbı da tam oturdu. L aldım, rahat.”</p>
+            <p class="review__meta"><b>@m***k</b><span>Tech Fleece Takım</span></p>
+          </div>
+        </li>
+        <li class="review">
+          <div class="review__media"><img src="https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=600&q=80&auto=format&fit=crop" width="600" height="750" alt="Siyah tişörtlü müşteri, pembe duvar önünde" loading="lazy"></div>
+          <div class="review__body">
+            <p class="review__quote">“Paket özenle gelmişti. Tişört yıkamadan sonra da formunu korudu.”</p>
+            <p class="review__meta"><b>@e***a</b><span>Ağır Gramaj Tişört</span></p>
+          </div>
+        </li>
+        <li class="review">
+          <div class="review__media"><img src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=600&q=80&auto=format&fit=crop" width="600" height="750" alt="Kırmızı üst ve siyah ceketli müşteri" loading="lazy"></div>
+          <div class="review__body">
+            <p class="review__quote">“WhatsApp'tan beden sordum, doğru bedeni önerdiler. Çok rahat.”</p>
+            <p class="review__meta"><b>@s***n</b><span>Club Fleece Hoodie</span></p>
+          </div>
+        </li>
+        <li class="review">
+          <div class="review__media"><img src="https://images.unsplash.com/photo-1618517351616-38fb9c5210c6?w=600&q=80&auto=format&fit=crop" width="600" height="750" alt="Siyah tişörtlü ve güneş gözlüklü müşteri, sokakta" loading="lazy"></div>
+          <div class="review__body">
+            <p class="review__quote">“Mağazaya gidip denedim, ertesi hafta bir renk daha aldım.”</p>
+            <p class="review__meta"><b>@b***u</b><span>Grafik Baskılı Tişört</span></p>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 7. Mağazamız (real storefront) -->
+  <section class="sec" id="magaza" aria-labelledby="store-title" style="padding-top:0">
+    <div class="wrap store">
+      <figure class="store__fig">
+        <div class="store__media"><img src="assets/ig/magaza-cephe.jpg" width="480" height="640" alt="Monark Wear mağaza cephesi: yeşil-beyaz tente, siyah MONARK WEAR tabelası, vitrinde ürünler" loading="lazy"></div>
+      </figure>
+      <div class="store__info">
+        <div class="store__head">
+          <h2 class="store__title display" id="store-title">Mağazamız</h2>
+          <blockquote class="store__quote"><p>“Artık sizi fiziksel mağazamızda da ağırlıyoruz!”</p><footer class="label">@monarkwearcom</footer></blockquote>
+        </div>
+        <div>
+          <dl class="store__dl">
+            <div><dt class="label">Adres</dt><dd><span class="ph">[Adres eklenecek]</span></dd></div>
+            <div><dt class="label">Saatler</dt><dd><span class="ph">[Çalışma saatleri eklenecek]</span></dd></div>
+            <div><dt class="label">Sipariş</dt><dd>Mağazada, WhatsApp'tan veya Shopier ile.</dd></div>
+          </dl>
+          <div class="store__ctas">
+            <a class="btn btn--ink" href="magaza.html">Mağazayı Gör <svg class="icon icon--arrow" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+            <a class="tlink" href="https://www.google.com/maps/search/?api=1&amp;query=Monark%20Wear" target="_blank" rel="noopener">Yol Tarifi Al</a>
+            <a class="tlink" href="https://wa.me/905000000000" data-wa="Merhaba, mağaza adresinizi öğrenebilir miyim?" target="_blank" rel="noopener">WhatsApp'tan Yaz</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8. Instagram (real posts) -->
+  <section aria-labelledby="ig-title">
+    <div class="wrap ig-head">
+      <h2 class="ig-head__handle" id="ig-title">@monarkwearcom <span><i class="dot" style="font-style:normal">· </i>42,1B takipçi</span></h2>
+      <a class="tlink" href="https://www.instagram.com/monarkwearcom/" target="_blank" rel="noopener">Takip Et <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+    </div>
+    <ul class="ig">
+      <li><a href="https://www.instagram.com/reel/DAY_3OlosU-/" target="_blank" rel="noopener" aria-label="Instagram reels: Nocta Tracksuit Monark'tan alınır"><span class="ig__type" aria-hidden="true"><svg class="icon icon--fill"><use href="#i-reel"/></svg></span><img src="assets/ig/nocta-tracksuit.jpg" width="360" height="640" alt="" loading="lazy" style="object-position:50% 40%"></a></li>
+      <li><a href="https://www.instagram.com/p/DaqS3jljRdH/" target="_blank" rel="noopener" aria-label="Instagram gönderisi: mağazamız açıldı"><img src="assets/ig/magaza-cephe.jpg" width="480" height="640" alt="" loading="lazy" style="object-position:50% 45%"></a></li>
+      <li><a href="https://www.instagram.com/p/DfuDPdQDS6E/" target="_blank" rel="noopener" aria-label="Instagram gönderisi: boxy oversize kot ceket"><img src="assets/ig/kot-ceket-model.jpg" width="480" height="640" alt="" loading="lazy" style="object-position:50% 30%"></a></li>
+      <li><a href="https://www.instagram.com/p/Df4lBostPLl/" target="_blank" rel="noopener" aria-label="Instagram gönderisi: Vice City kampanyası"><img src="assets/ig/vice-city-kampanya.jpg" width="512" height="640" alt="" loading="lazy" style="object-position:50% 40%"></a></li>
+      <li><a href="https://www.instagram.com/p/DgImpa4DQ4G/" target="_blank" rel="noopener" aria-label="Instagram gönderisi: kışlık sherpa ceket"><img src="assets/ig/sherpa-ceket.jpg" width="480" height="640" alt="" loading="lazy" style="object-position:60% 50%"></a></li>
+      <li><a href="https://www.instagram.com/p/DgKACP7DcOV/" target="_blank" rel="noopener" aria-label="Instagram gönderisi: 3 iplik hoodie"><img src="assets/ig/uc-iplik-hoodie.jpg" width="608" height="640" alt="" loading="lazy"></a></li>
+      <li><a href="https://www.instagram.com/reel/DShwrRSDXlf/" target="_blank" rel="noopener" aria-label="Instagram reels: premium eşofman takımı"><span class="ig__type" aria-hidden="true"><svg class="icon icon--fill"><use href="#i-reel"/></svg></span><img src="assets/ig/esofman-takimi-rack.jpg" width="361" height="640" alt="" loading="lazy" style="object-position:50% 50%"></a></li>
+      <li><a href="https://www.instagram.com/p/DgIbujfjakX/" target="_blank" rel="noopener" aria-label="Instagram gönderisi: double face jogger"><img src="assets/ig/double-face-jogger.jpg" width="480" height="640" alt="" loading="lazy"></a></li>
+      <li><a href="https://www.instagram.com/p/DgKCo13DfpW/" target="_blank" rel="noopener" aria-label="Instagram gönderisi: premium 3 iplik sweatshirt"><img src="assets/ig/premium-sweatshirt.jpg" width="480" height="640" alt="" loading="lazy"></a></li>
+      <li><a href="https://www.instagram.com/reel/Df2oE8gtVPo/" target="_blank" rel="noopener" aria-label="Instagram reels: boxy kot ceketler"><span class="ig__type" aria-hidden="true"><svg class="icon icon--fill"><use href="#i-reel"/></svg></span><img src="assets/ig/kot-ceket-rack.jpg" width="360" height="640" alt="" loading="lazy" style="object-position:55% 45%"></a></li>
+      <li><a href="https://www.instagram.com/p/DgKbkgojVRf/" target="_blank" rel="noopener" aria-label="Instagram gönderisi: 3 iplik sweatshirt"><img src="assets/ig/uc-iplik-sweatshirt.jpg" width="561" height="640" alt="" loading="lazy"></a></li>
+      <li><a href="https://www.instagram.com/reel/Df-S5sktTcY/" target="_blank" rel="noopener" aria-label="Instagram reels: Monark Wear'da büyük indirim"><span class="ig__type" aria-hidden="true"><svg class="icon icon--fill"><use href="#i-reel"/></svg></span><img src="assets/ig/magaza-indirim.jpg" width="360" height="640" alt="" loading="lazy" style="object-position:50% 40%"></a></li>
+    </ul>
+  </section>
+
+  <!-- 9. Trust -->
+  <section aria-label="Neden Monark">
+    <ul class="trust">
+      <li><span class="trust__v display">7 Yıl</span><span class="trust__d">Tecrübe</span></li>
+      <li><span class="trust__v display tnum">2.999 TL+</span><span class="trust__d">Ücretsiz kargo</span></li>
+      <li><span class="trust__v display">WhatsApp</span><span class="trust__d">Birebir destek</span></li>
+    </ul>
+  </section>
+
+</main>
+
+<!-- Footer (shared) -->
+<footer class="footer on-dark">
+  <div class="wrap">
+    <div class="fcols">
+      <div class="fcol">
+        <h2 class="label">Alışveriş</h2>
+        <ul>
+          <li><a href="koleksiyon.html?kat=fleece">Fleece</a></li>
+          <li><a href="koleksiyon.html?kat=esofman">Eşofman Takımı</a></li>
+          <li><a href="koleksiyon.html?kat=ceket">Ceket</a></li>
+          <li><a href="koleksiyon.html?kat=sweat">Sweatshirt</a></li>
+          <li><a href="koleksiyon.html?kat=hoodie">Hoodie</a></li>
+          <li><a href="koleksiyon.html">Tüm Ürünler</a></li>
+        </ul>
+      </div>
+      <div class="fcol">
+        <h2 class="label">Yardım</h2>
+        <ul>
+          <li><a href="yardim.html#sss">Sıkça Sorulanlar</a></li>
+          <li><a href="yardim.html#kargo-iade">Kargo &amp; Değişim</a></li>
+          <li><a href="yardim.html#beden-rehberi">Beden Rehberi</a></li>
+          <li><a href="yardim.html#iletisim">İletişim</a></li>
+          <li><span>2.999 TL ve üzeri ücretsiz kargo</span></li>
+        </ul>
+      </div>
+      <div class="fcol">
+        <h2 class="label">Mağaza</h2>
+        <ul>
+          <li><a href="magaza.html">Mağazamız</a></li>
+          <li><span class="ph">[Adres eklenecek]</span></li>
+          <li><span class="ph">[Çalışma saatleri eklenecek]</span></li>
+        </ul>
+      </div>
+      <div class="fcol">
+        <h2 class="label">Sipariş &amp; Takip</h2>
+        <ul>
+          <li><a href="https://wa.me/905000000000" data-wa="Merhaba, sipariş vermek istiyorum." target="_blank" rel="noopener">WhatsApp'tan Sipariş</a></li>
+          <li><a href="https://www.shopier.com/monarkwear" target="_blank" rel="noopener">Shopier Mağazası</a></li>
+          <li><a href="https://www.instagram.com/monarkwearcom/" target="_blank" rel="noopener">Instagram · @monarkwearcom</a></li>
+          <li><span>42,1B takipçi</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="fbar">
+      <span>© 2026 Monark Wear · İsmimiz Kalitemiz</span>
+      <span>Fiyatlar, yorumlar ve bazı görseller demo amaçlıdır.</span>
+    </div>
+  </div>
+  <div class="fmark" aria-hidden="true"><span class="display">Monark</span></div>
+</footer>
+
+<a class="wa-float" href="https://wa.me/905000000000" data-wa="Merhaba, bilgi almak istiyorum." target="_blank" rel="noopener" aria-label="WhatsApp'tan yaz">
+  <svg class="icon icon--fill" aria-hidden="true"><use href="#i-wa"/></svg>
+</a>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/site.js"></script>
+<script>
+(function(){
+  "use strict";
+  var M = window.Monark; if (!M) return;
+
+  /* ---------- Yeni Gelenler ---------- */
+  var ORDER = ["boxy-kot-ceket","nocta-tracksuit-takim","kislik-sherpa-ceket","uc-iplik-hoodie",
+               "premium-esofman-takimi","double-face-jogger","premium-uc-iplik-sweatshirt","uc-iplik-sweatshirt",
+               "tech-fleece-takim","club-fleece-hoodie","agir-gramaj-tisort","grafik-baskili-tisort"];
+  var SETS = {
+    all:   { test:function(){ return true; }, href:"koleksiyon.html" },
+    takim: { test:function(p){ return p.cats.indexOf("esofman") > -1; }, href:M.categoryUrl("esofman") },
+    ceket: { test:function(p){ return p.cats.indexOf("ceket") > -1; }, href:M.categoryUrl("ceket") },
+    ust:   { test:function(p){ return /sweat|hoodie|tisort/.test(p.cats.join(" ")); }, href:"koleksiyon.html" }
+  };
+  var list = ORDER.map(M.getProduct).filter(Boolean);
+  var grid = document.getElementById("grid"), empty = document.getElementById("grid-empty");
+  var status = document.getElementById("grid-status"), allLink = document.getElementById("grid-all");
+  var btns = [].slice.call(document.querySelectorAll(".filter"));
+  function show(key){
+    var set = SETS[key] || SETS.all;
+    var items = list.filter(set.test).slice(0, 8);
+    grid.innerHTML = items.map(function(p){ return M.renderCard(p); }).join("");
+    empty.hidden = items.length > 0;
+    allLink.href = set.href;
+    btns.forEach(function(b){ b.setAttribute("aria-pressed", String(b.getAttribute("data-set") === key)); });
+    status.textContent = items.length + " ürün gösteriliyor";
+  }
+  btns.forEach(function(b){ b.addEventListener("click", function(){ show(b.getAttribute("data-set")); }); });
+  show("all");
+
+  /* ---------- Reviews nav ---------- */
+  var rev = document.getElementById("reviews"), rnav = [].slice.call(document.querySelectorAll(".rnav"));
+  function revState(){
+    var max = rev.scrollWidth - rev.clientWidth - 2;
+    rnav[0].disabled = rev.scrollLeft <= 2;
+    rnav[1].disabled = rev.scrollLeft >= max;
+  }
+  rnav.forEach(function(b){
+    b.addEventListener("click", function(){
+      var card = rev.querySelector(".review");
+      var step = card ? card.getBoundingClientRect().width + 16 : rev.clientWidth * .8;
+      rev.scrollBy({ left: step * Number(b.getAttribute("data-dir")), behavior: M.reducedMotion ? "auto" : "smooth" });
+    });
+  });
+  rev.addEventListener("scroll", revState, { passive:true });
+  window.addEventListener("resize", revState);
+  revState();
+})();
+</script>
+</body>
+</html>

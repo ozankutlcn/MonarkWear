@@ -1,0 +1,437 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mağazamız — Monark Wear | Demo</title>
+<meta name="description" content="Monark Wear fiziksel mağaza. Eşofman takımı, ceket, sherpa, hoodie rafta. Adres ve çalışma saatleri eklenecek.">
+<meta name="theme-color" content="#0B0B0B">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/site.css">
+<style>
+/* ==========================================================================
+   Mağaza only
+   ========================================================================== */
+.shop-title{ font-size:clamp(72px, 13.4vw, 228px); }
+.shop-head__meta{ display:grid; gap:6px; justify-items:end; text-align:right; padding-bottom:.6em; }
+.shop-head__meta .label{ color:var(--muted); }
+
+/* Hero: two real IG photos + ink quote column. IG sources are 480 / 360px wide;
+   panels are capped so neither is shown above ~1.4x. */
+.shop-hero{
+  display:grid; gap:var(--gap);
+  grid-template-columns:min(42%, 640px) min(33%, 500px) minmax(0, 1fr);
+  align-items:stretch;
+}
+.shop-pics{ display:contents; }
+.shop-fig{ position:relative; margin:0; background:var(--surface); overflow:hidden; min-height:0; }
+.shop-fig img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+.shop-fig--front img{ object-position:50% 40%; }
+/* magaza-indirim.jpg has a burned-in subtitle at ~76% of its height. This panel keeps a
+   4:5 ratio anchored to the top, so the crop always ends above the subtitle. */
+.shop-fig--reel{ aspect-ratio:4/5; align-self:start; }
+.shop-fig--reel img{ object-position:50% 0; }
+.shop-fig figcaption{
+  position:absolute; left:0; bottom:0; display:inline-flex; align-items:center; gap:8px;
+  background:var(--white); color:var(--ink); padding:10px 14px 0 0; font-size:12px;
+}
+.shop-fig figcaption a{ text-decoration:underline; text-underline-offset:3px; }
+.shop-fig figcaption a:hover{ text-decoration-thickness:2px; }
+.shop-fig__tag{
+  position:absolute; top:12px; left:12px; z-index:1;
+  background:var(--accent); color:var(--ink); padding:5px 7px 4px;
+  font-stretch:75%; font-weight:700; text-transform:uppercase; letter-spacing:.06em; font-size:11px; line-height:1;
+}
+.shop-quote{
+  background:var(--ink); color:var(--white); padding:clamp(24px, 2.6vw, 40px);
+  display:flex; flex-direction:column; justify-content:space-between; gap:32px;
+}
+.shop-quote__mark{ width:14px; height:14px; background:var(--accent); }
+.shop-quote blockquote{ display:grid; gap:16px; }
+.shop-quote blockquote p{ font-size:clamp(26px, 2.4vw, 38px); line-height:1.12; font-weight:700; font-stretch:75%; letter-spacing:-.005em; }
+.shop-quote blockquote footer{ color:rgba(255,255,255,.6); }
+.shop-quote__ctas{ display:grid; gap:10px; }
+.shop-quote__ctas .btn{ width:100%; }
+
+/* Visit: info table + map placeholder */
+.visit{ display:grid; grid-template-columns:minmax(0, 5fr) minmax(0, 7fr); gap:clamp(32px, 5vw, 88px); align-items:start; }
+.visit__title{ font-size:clamp(48px, 6vw, 96px); margin-bottom:clamp(24px, 3vw, 40px); }
+.idl{ display:grid; border-top:1px solid var(--ink); }
+.idl > div{ display:grid; grid-template-columns:150px 1fr; gap:16px; padding:18px 0; border-bottom:1px solid var(--line); }
+.idl dt{ display:flex; align-items:center; gap:10px; color:var(--muted); padding-top:2px; }
+.idl dt .icon{ width:18px; height:18px; color:var(--ink); }
+.idl dd{ font-size:16px; font-weight:500; line-height:1.45; }
+.idl dd .small{ display:block; margin-top:4px; font-weight:400; }
+.visit__ctas{ display:flex; flex-wrap:wrap; gap:10px; margin-top:28px; }
+.visit__ctas .btn{ flex:1 1 220px; }
+
+.map{
+  position:relative; overflow:hidden; aspect-ratio:7/5; background:#1A1A19; color:var(--white);
+  display:grid; place-items:center; --focus:var(--white);
+}
+.map__grid{ position:absolute; inset:0; width:100%; height:100%; }
+.map__pin{ position:relative; display:grid; justify-items:center; gap:14px; text-align:center; padding:24px; }
+.map__pin .pin{ width:64px; height:64px; display:grid; place-items:center; background:var(--accent); color:var(--ink); }
+.map__pin .pin .icon{ width:30px; height:30px; stroke-width:2; }
+.map__pin .label{ background:var(--ink); padding:8px 12px 7px; border:1px dashed rgba(255,255,255,.4); }
+.map__pin .small{ color:rgba(255,255,255,.66); max-width:32ch; }
+.map__corner{ position:absolute; left:0; bottom:0; background:var(--ink); padding:10px 14px; font-size:12px; color:rgba(255,255,255,.6); }
+
+/* In-store strip */
+.instore{ display:grid; grid-template-columns:repeat(4, minmax(0, 1fr)); gap:var(--gap); }
+.instore a{ display:block; }
+.instore__media{ aspect-ratio:3/4; background:var(--surface); overflow:hidden; }
+.instore__media img{ width:100%; height:100%; object-fit:cover; transition:transform .4s var(--ease); }
+.instore__row{ display:flex; justify-content:space-between; align-items:center; gap:8px; padding-top:14px; }
+.instore__row .icon{ width:18px; height:18px; transition:transform .25s var(--ease); }
+.instore__cap{ font-size:14px; color:var(--muted); margin-top:4px; }
+@media (hover:hover) and (pointer:fine){
+  .instore a:hover .instore__media img{ transform:scale(1.03); }
+  .instore a:hover .instore__row .icon{ transform:translateX(4px); }
+  .instore a:hover .label span{ text-decoration:underline; text-decoration-thickness:2px; text-underline-offset:4px; }
+}
+
+/* Closing band */
+.ask{ background:var(--accent); color:var(--ink); }
+.ask__inner{ display:flex; justify-content:space-between; align-items:flex-end; gap:24px 48px; flex-wrap:wrap; padding-block:clamp(40px, 5vw, 72px); }
+.ask__title{ font-size:clamp(48px, 7vw, 112px); }
+.ask p{ font-size:17px; font-weight:500; max-width:38ch; margin-top:16px; }
+.ask .btn--ink:hover{ background:var(--white); }
+
+@media (max-width:1199px){
+  .shop-hero{ grid-template-columns:minmax(0, 1.25fr) minmax(0, 1fr); }
+  .shop-quote{ grid-column:1 / -1; flex-direction:row; align-items:flex-end; }
+  .shop-quote__ctas{ min-width:260px; }
+}
+@media (max-width:899px){
+  .visit{ grid-template-columns:1fr; }
+  .instore{ grid-template-columns:repeat(2, minmax(0, 1fr)); row-gap:28px; }
+}
+@media (max-width:767px){
+  .shop-title{ font-size:clamp(56px, 19vw, 120px); }
+  .shop-head__meta{ justify-items:start; text-align:left; padding-bottom:0; }
+  /* two photos become a swipeable pair; both keep 4:5 so the reel crop stays above its subtitle */
+  .shop-hero{ display:block; }
+  .shop-pics{
+    display:flex; gap:8px; overflow-x:auto; scroll-snap-type:x mandatory; scrollbar-width:none;
+    margin-inline:calc(var(--pad) * -1); padding-inline:var(--pad); scroll-padding-inline:var(--pad);
+    margin-bottom:8px;
+  }
+  .shop-pics::-webkit-scrollbar{ display:none; }
+  .shop-pics:focus-visible{ outline-offset:-2px; }
+  .shop-fig{ flex:0 0 80%; aspect-ratio:4/5; scroll-snap-align:start; }
+  .shop-fig figcaption{ padding:8px 12px 0 0; }
+  .shop-quote{ flex-direction:column; align-items:stretch; }
+  .shop-quote__ctas{ min-width:0; }
+  .idl > div{ grid-template-columns:1fr; gap:6px; padding:16px 0; }
+  .map{ aspect-ratio:4/5; margin-inline:calc(var(--pad) * -1); }
+  .instore__cap{ font-size:13px; }
+  .ask__inner .btn{ width:100%; }
+}
+@media (prefers-reduced-motion:reduce){
+  .instore a:hover .instore__media img{ transform:none; }
+}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 21 21"/></symbol>
+  <symbol id="i-bag" viewBox="0 0 24 24"><path d="M4 8h16l-1 13H5L4 8Z"/><path d="M8.5 8V6.5a3.5 3.5 0 0 1 7 0V8"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4 12h15M13 6l6 6-6 6"/></symbol>
+  <symbol id="i-arrow-l" viewBox="0 0 24 24"><path d="M20 12H5M11 6l-6 6 6 6"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="M5 5l14 14M19 5 5 19"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M3 8h18M3 16h18"/></symbol>
+  <symbol id="i-pause" viewBox="0 0 24 24"><path d="M8 5v14M16 5v14"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 5l12 7-12 7V5Z"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></symbol>
+  <symbol id="i-truck" viewBox="0 0 24 24"><path d="M2 6h12v10H2zM14 10h4l3 3v3h-7"/><circle cx="6" cy="18" r="1.8"/><circle cx="17" cy="18" r="1.8"/></symbol>
+  <symbol id="i-store" viewBox="0 0 24 24"><path d="M3 9l1.5-5h15L21 9M3 9h18M3 9v11h18V9M9 20v-6h6v6"/></symbol>
+  <symbol id="i-swap" viewBox="0 0 24 24"><path d="M4 8h14l-3-3M20 16H6l3 3"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/></symbol>
+  <symbol id="i-zoom" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 21 21M10.5 7.5v6M7.5 10.5h6"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></symbol>
+  <symbol id="i-ig" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18"/><circle cx="12" cy="12" r="4"/><path d="M17.5 6.5h.01"/></symbol>
+  <symbol id="i-reel" viewBox="0 0 24 24"><path d="M8 5v14l11-7L8 5Z"/></symbol>
+  <symbol id="i-wa" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.050 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></symbol>
+</svg>
+
+<a class="skip" href="#main">İçeriğe geç</a>
+
+<!-- Duyuru bandı (shared) -->
+<div class="marquee" role="region" aria-label="Duyurular">
+  <div class="marquee__viewport">
+    <div class="marquee__track">
+      <ul class="marquee__list">
+        <li>2.999 TL ve üzeri ücretsiz kargo</li>
+        <li>7 yıllık tecrübe</li>
+        <li>WhatsApp'tan sipariş</li>
+        <li>İsmimiz kalitemiz</li>
+        <li>2.999 TL ve üzeri ücretsiz kargo</li>
+        <li>7 yıllık tecrübe</li>
+        <li>WhatsApp'tan sipariş</li>
+        <li>İsmimiz kalitemiz</li>
+      </ul>
+      <ul class="marquee__list" aria-hidden="true">
+        <li>2.999 TL ve üzeri ücretsiz kargo</li>
+        <li>7 yıllık tecrübe</li>
+        <li>WhatsApp'tan sipariş</li>
+        <li>İsmimiz kalitemiz</li>
+        <li>2.999 TL ve üzeri ücretsiz kargo</li>
+        <li>7 yıllık tecrübe</li>
+        <li>WhatsApp'tan sipariş</li>
+        <li>İsmimiz kalitemiz</li>
+      </ul>
+    </div>
+  </div>
+  <button class="marquee__toggle" type="button" aria-pressed="false" aria-label="Kayan duyuruyu durdur">
+    <svg class="icon i-pause" aria-hidden="true"><use href="#i-pause"/></svg>
+    <svg class="icon icon--fill i-play" aria-hidden="true"><use href="#i-play"/></svg>
+  </button>
+</div>
+
+<!-- Header (shared) -->
+<header class="header" id="top">
+  <div class="wrap header__inner">
+    <div class="header__left">
+      <nav class="nav" aria-label="Ana menü">
+        <a href="koleksiyon.html?kat=fleece">Fleece</a>
+        <a href="koleksiyon.html?kat=esofman">Takım</a>
+        <a href="koleksiyon.html?kat=ceket">Ceket</a>
+        <a href="koleksiyon.html?kat=sweat">Sweat</a>
+        <a href="magaza.html">Mağaza</a>
+      </nav>
+      <button class="hbtn menu-btn" type="button" data-open="menu" aria-haspopup="dialog">
+        <svg class="icon" aria-hidden="true"><use href="#i-menu"/></svg><span class="label-text">Menü</span>
+      </button>
+    </div>
+    <a class="wordmark" href="index.html" aria-label="Monark Wear ana sayfa">MONARK</a>
+    <div class="header__right">
+      <button class="hbtn hbtn--search" type="button" data-open="search" aria-haspopup="dialog">
+        <svg class="icon" aria-hidden="true"><use href="#i-search"/></svg><span class="label-text">Ara</span>
+      </button>
+      <button class="hbtn" type="button" data-open="cart" aria-haspopup="dialog" aria-label="Sepet, 0 ürün">
+        <svg class="icon" aria-hidden="true"><use href="#i-bag"/></svg><span class="label-text">Sepet</span><span class="count tnum" data-cart-count aria-hidden="true">0</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- 1. Hero: real storefront photos -->
+  <section class="wrap" aria-labelledby="shop-title">
+    <div class="page-head">
+      <nav class="crumbs" aria-label="Konum">
+        <ol>
+          <li><a href="index.html">Ana Sayfa</a></li>
+          <li aria-current="page">Mağazamız</li>
+        </ol>
+      </nav>
+      <div class="page-head__row">
+        <h1 class="page-head__title display shop-title" id="shop-title">Mağazamız</h1>
+        <div class="shop-head__meta">
+          <span class="label">Fiziksel mağaza</span>
+          <span class="ph">[Adres eklenecek]</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="shop-hero">
+      <div class="shop-pics" tabindex="0" role="group" aria-label="Mağaza fotoğrafları, yatay kaydırılabilir">
+      <figure class="shop-fig shop-fig--front">
+        <img src="assets/ig/magaza-cephe.jpg" width="480" height="640" alt="Monark Wear mağaza cephesi: yeşil-beyaz çizgili tente, siyah MONARK WEAR tabelası, vitrinde mankenler ve formalar" fetchpriority="high">
+        <figcaption><span>Cephe</span> · <a href="https://www.instagram.com/p/DaqS3jljRdH/" target="_blank" rel="noopener">@monarkwearcom</a></figcaption>
+      </figure>
+      <figure class="shop-fig shop-fig--reel">
+        <span class="shop-fig__tag">Reels</span>
+        <img src="assets/ig/magaza-indirim.jpg" width="360" height="640" alt="Monark Wear mağaza girişi, tentenin altında içeri giren bir müşteri ve vitrinde track ceket" loading="lazy">
+        <figcaption><span>“Büyük indirim!”</span> · <a href="https://www.instagram.com/reel/Df-S5sktTcY/" target="_blank" rel="noopener">İzle</a></figcaption>
+      </figure>
+      </div>
+      <div class="shop-quote on-dark">
+        <blockquote>
+          <span class="shop-quote__mark" aria-hidden="true"></span>
+          <p>“Artık sizi fiziksel mağazamızda da ağırlıyoruz!”</p>
+          <footer class="label">@monarkwearcom · Instagram</footer>
+        </blockquote>
+        <div class="shop-quote__ctas">
+          <a class="btn btn--accent" href="https://www.google.com/maps/search/?api=1&amp;query=Monark%20Wear" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#i-pin"/></svg> Yol Tarifi Al<span class="sr-only"> (Google Haritalar, yeni sekme)</span></a>
+          <a class="btn btn--outline-light" href="https://wa.me/905000000000" data-wa="Merhaba, mağazanıza gelmek istiyorum. Adres ve çalışma saatlerini paylaşır mısınız?" target="_blank" rel="noopener"><svg class="icon icon--fill" aria-hidden="true"><use href="#i-wa"/></svg> WhatsApp'tan Yaz</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. Visit info + map placeholder -->
+  <section class="sec" aria-labelledby="visit-title">
+    <div class="wrap visit">
+      <div>
+        <h2 class="visit__title display" id="visit-title">Ziyaret</h2>
+        <dl class="idl">
+          <div>
+            <dt class="label"><svg class="icon" aria-hidden="true"><use href="#i-pin"/></svg>Adres</dt>
+            <dd><span class="ph">[Adres eklenecek]</span></dd>
+          </div>
+          <div>
+            <dt class="label"><svg class="icon" aria-hidden="true"><use href="#i-store"/></svg>Saatler</dt>
+            <dd><span class="ph">[Çalışma saatleri eklenecek]</span></dd>
+          </div>
+          <div>
+            <dt class="label"><svg class="icon icon--fill" aria-hidden="true"><use href="#i-wa"/></svg>Telefon</dt>
+            <dd><span class="ph">[Telefon / WhatsApp numarası eklenecek]</span><span class="small">Şimdilik demo numara bağlı.</span></dd>
+          </div>
+          <div>
+            <dt class="label"><svg class="icon" aria-hidden="true"><use href="#i-bag"/></svg>Sipariş</dt>
+            <dd>Mağazada, WhatsApp'tan veya Shopier ile.</dd>
+          </div>
+          <div>
+            <dt class="label"><svg class="icon" aria-hidden="true"><use href="#i-truck"/></svg>Kargo</dt>
+            <dd>2.999 TL ve üzeri siparişlerde ücretsiz.</dd>
+          </div>
+        </dl>
+        <div class="visit__ctas">
+          <a class="btn btn--ink" href="https://www.google.com/maps/search/?api=1&amp;query=Monark%20Wear" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#i-pin"/></svg> Yol Tarifi Al<span class="sr-only"> (Google Haritalar, yeni sekme)</span></a>
+          <a class="btn btn--outline" href="https://wa.me/905000000000" data-wa="Merhaba, mağaza adresinizi öğrenebilir miyim?" target="_blank" rel="noopener"><svg class="icon icon--fill" aria-hidden="true"><use href="#i-wa"/></svg> Adresi Sor</a>
+        </div>
+      </div>
+
+      <div class="map" role="img" aria-label="Harita yer tutucusu. Harita, adres girildiğinde eklenecek.">
+        <svg class="map__grid" viewBox="0 0 700 500" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
+          <g fill="none" stroke="rgba(255,255,255,.09)" stroke-width="1">
+            <path d="M0 80h700M0 170h700M0 260h700M0 350h700M0 440h700"/>
+            <path d="M90 0v500M200 0v500M310 0v500M420 0v500M530 0v500M640 0v500"/>
+          </g>
+          <g fill="none" stroke="rgba(255,255,255,.2)" stroke-width="14" stroke-linecap="square">
+            <path d="M-20 300 L260 236 L720 210"/>
+            <path d="M372 -20 L352 520"/>
+          </g>
+          <g fill="none" stroke="rgba(255,255,255,.12)" stroke-width="6">
+            <path d="M-20 120 L700 150"/>
+            <path d="M130 -20 L170 520"/>
+            <path d="M560 -20 L600 520"/>
+          </g>
+          <g fill="rgba(255,255,255,.05)">
+            <rect x="210" y="40" width="90" height="110"/><rect x="430" y="270" width="160" height="70"/>
+            <rect x="40" y="360" width="80" height="70"/><rect x="430" y="40" width="90" height="90"/>
+          </g>
+        </svg>
+        <div class="map__pin">
+          <span class="pin" aria-hidden="true"><svg class="icon"><use href="#i-pin"/></svg></span>
+          <p class="label">Harita adres girildiğinde eklenecek</p>
+          <p class="small">Şimdilik yol tarifi Google Haritalar'da “Monark Wear” araması açar.</p>
+        </div>
+        <span class="map__corner" aria-hidden="true">Yer tutucu · harita yok</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. Mağazada neler var -->
+  <section class="sec" aria-labelledby="instore-title" style="padding-top:0">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2 class="display d2" id="instore-title">Rafta Neler Var</h2>
+        <a class="tlink" href="koleksiyon.html">Tüm Ürünler <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+      </div>
+      <ul class="instore">
+        <li><a href="koleksiyon.html?kat=esofman">
+          <div class="instore__media"><img src="assets/ig/esofman-takimi-rack.jpg" width="361" height="640" alt="Üç şeritli premium eşofman takımları, MONARK tabelası altında askıda" loading="lazy" style="object-position:50% 60%"></div>
+          <div class="instore__row label"><span>Eşofman Takımı</span><svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></div>
+          <p class="instore__cap">Premium takımlar. Çok sınırlı stok.</p>
+        </a></li>
+        <li><a href="koleksiyon.html?kat=ceket">
+          <div class="instore__media"><img src="assets/ig/kot-ceket-rack.jpg" width="360" height="640" alt="Siyah askılıkta boxy kot ceketler" loading="lazy" style="object-position:55% 45%"></div>
+          <div class="instore__row label"><span>Kot Ceket</span><svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></div>
+          <p class="instore__cap">Boxy oversize kalıp.</p>
+        </a></li>
+        <li><a href="koleksiyon.html?kat=ceket">
+          <div class="instore__media"><img src="assets/ig/sherpa-ceket.jpg" width="480" height="640" alt="Bej, mavi, siyah ve haki sherpa ceketler askılıkta" loading="lazy" style="object-position:62% 50%"></div>
+          <div class="instore__row label"><span>Sherpa Ceket</span><svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></div>
+          <p class="instore__cap">Kışlık, dört renk.</p>
+        </a></li>
+        <li><a href="koleksiyon.html?kat=hoodie">
+          <div class="instore__media"><img src="assets/ig/uc-iplik-hoodie.jpg" width="608" height="640" alt="Siyah, lacivert, kırmızı ve gri 3 iplik hoodie'ler askılıkta" loading="lazy" style="object-position:62% 50%"></div>
+          <div class="instore__row label"><span>3 İplik Hoodie</span><svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></div>
+          <p class="instore__cap">Kampanyalı fiyat.</p>
+        </a></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 4. Closing band -->
+  <section class="ask" aria-labelledby="ask-title">
+    <div class="wrap ask__inner">
+      <div>
+        <h2 class="ask__title display" id="ask-title">Gelmeden Sor.</h2>
+        <p>Hangi beden, hangi renk rafta? WhatsApp'tan yaz, söyleyelim.</p>
+      </div>
+      <a class="btn btn--ink" href="https://wa.me/905000000000" data-wa="Merhaba, mağazaya gelmeden önce stok sormak istiyorum." target="_blank" rel="noopener"><svg class="icon icon--fill" aria-hidden="true"><use href="#i-wa"/></svg> WhatsApp'tan Sor</a>
+    </div>
+  </section>
+
+</main>
+
+<!-- Footer (shared) -->
+<footer class="footer on-dark">
+  <div class="wrap">
+    <div class="fcols">
+      <div class="fcol">
+        <h2 class="label">Alışveriş</h2>
+        <ul>
+          <li><a href="koleksiyon.html?kat=fleece">Fleece</a></li>
+          <li><a href="koleksiyon.html?kat=esofman">Eşofman Takımı</a></li>
+          <li><a href="koleksiyon.html?kat=ceket">Ceket</a></li>
+          <li><a href="koleksiyon.html?kat=sweat">Sweatshirt</a></li>
+          <li><a href="koleksiyon.html?kat=hoodie">Hoodie</a></li>
+          <li><a href="koleksiyon.html">Tüm Ürünler</a></li>
+        </ul>
+      </div>
+      <div class="fcol">
+        <h2 class="label">Yardım</h2>
+        <ul>
+          <li><a href="yardim.html#sss">Sıkça Sorulanlar</a></li>
+          <li><a href="yardim.html#kargo-iade">Kargo &amp; Değişim</a></li>
+          <li><a href="yardim.html#beden-rehberi">Beden Rehberi</a></li>
+          <li><a href="yardim.html#iletisim">İletişim</a></li>
+          <li><span>2.999 TL ve üzeri ücretsiz kargo</span></li>
+        </ul>
+      </div>
+      <div class="fcol">
+        <h2 class="label">Mağaza</h2>
+        <ul>
+          <li><a href="magaza.html">Mağazamız</a></li>
+          <li><span class="ph">[Adres eklenecek]</span></li>
+          <li><span class="ph">[Çalışma saatleri eklenecek]</span></li>
+        </ul>
+      </div>
+      <div class="fcol">
+        <h2 class="label">Sipariş &amp; Takip</h2>
+        <ul>
+          <li><a href="https://wa.me/905000000000" data-wa="Merhaba, sipariş vermek istiyorum." target="_blank" rel="noopener">WhatsApp'tan Sipariş</a></li>
+          <li><a href="https://www.shopier.com/monarkwear" target="_blank" rel="noopener">Shopier Mağazası</a></li>
+          <li><a href="https://www.instagram.com/monarkwearcom/" target="_blank" rel="noopener">Instagram · @monarkwearcom</a></li>
+          <li><span>42,1B takipçi</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="fbar">
+      <span>© 2026 Monark Wear · İsmimiz Kalitemiz</span>
+      <span>Fiyatlar, yorumlar ve bazı görseller demo amaçlıdır.</span>
+    </div>
+  </div>
+  <div class="fmark" aria-hidden="true"><span class="display">Monark</span></div>
+</footer>
+
+<a class="wa-float" href="https://wa.me/905000000000" data-wa="Merhaba, bilgi almak istiyorum." target="_blank" rel="noopener" aria-label="WhatsApp'tan yaz">
+  <svg class="icon icon--fill" aria-hidden="true"><use href="#i-wa"/></svg>
+</a>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/site.js"></script>
+</body>
+</html>

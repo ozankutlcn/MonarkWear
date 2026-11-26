@@ -1,0 +1,822 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ürün — Monark Wear | Demo</title>
+<meta name="description" content="Monark Wear ürün detayı. Renk ve beden seç, sepete ekle; siparişi WhatsApp'tan ya da Shopier ile tamamla.">
+<meta name="theme-color" content="#0B0B0B">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://images.unsplash.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/site.css">
+<style>
+/* ==========================================================================
+   urun.html only
+   ========================================================================== */
+.pdp-shell{ max-width:1440px; }
+.pdp-crumbs{ padding-block:clamp(14px, 1.8vw, 22px); }
+.pdp-crumbs [aria-current="page"]{ max-width:40ch; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+/* Layout: gallery + accordions left, sticky buy panel right */
+.pdp{
+  --thumb:72px;
+  /* stage = 4:5 bed. Height is capped by viewport and by available width so IG
+     sources (max 640px tall) never exceed ~1.3x */
+  --stage-h:clamp(440px, min(calc(100svh - var(--mq) - var(--hh) - 132px), 800px, calc((100vw - 2 * var(--pad) - 380px - 56px - var(--thumb) - 12px) * 1.25)), 800px);
+  display:grid; grid-template-columns:auto minmax(360px, 1fr);
+  grid-template-areas:"gal buy" "more buy";
+  column-gap:clamp(40px, 5vw, 88px); row-gap:56px; align-items:start;
+  padding-bottom:var(--sec);
+}
+.pdp__gal{ grid-area:gal; min-width:0; }
+.pdp__buy{ grid-area:buy; position:sticky; top:var(--stick, calc(var(--hh) + 24px)); max-width:560px; }
+.pdp__more{ grid-area:more; min-width:0; max-width:calc(var(--stage-h) * .8 + var(--thumb) + 12px); }
+
+/* Gallery */
+.gal{ display:grid; grid-template-columns:var(--thumb) calc(var(--stage-h) * .8); gap:12px; align-items:start; }
+.gal--single{ grid-template-columns:calc(var(--stage-h) * .8); }
+.pdp--single .pdp__more{ max-width:calc(var(--stage-h) * .8); }
+.gal__thumbs{ display:grid; gap:8px; width:var(--thumb); }
+.gal__thumb{ position:relative; display:block; width:var(--thumb); aspect-ratio:4/5; background:var(--surface); overflow:hidden; }
+.gal__thumb img{ width:100%; height:100%; object-fit:cover; opacity:.72; transition:opacity .2s; }
+.gal__thumb::after{ content:""; position:absolute; inset:0; box-shadow:inset 0 0 0 1px var(--line); transition:box-shadow .2s; }
+.gal__thumb:hover img, .gal__thumb[aria-current="true"] img{ opacity:1; }
+.gal__thumb[aria-current="true"]::after{ box-shadow:inset 0 0 0 2px var(--ink); }
+.gal__thumb:focus-visible{ outline-offset:2px; }
+.gal__stage{ position:relative; width:calc(var(--stage-h) * .8); height:var(--stage-h); background:var(--surface); }
+.gal__track{ display:flex; width:100%; height:100%; overflow-x:auto; overflow-y:hidden; scroll-snap-type:x mandatory; scrollbar-width:none; overscroll-behavior-x:contain; }
+.gal__track::-webkit-scrollbar{ display:none; }
+.gal__slide{ flex:0 0 100%; height:100%; scroll-snap-align:start; scroll-snap-stop:always; }
+.gal__zoom{ display:block; width:100%; height:100%; cursor:zoom-in; }
+.gal__zoom:focus-visible{ outline-offset:-4px; }
+.gal__zoom img{ width:100%; height:100%; object-fit:cover; }
+.gal__zoom.is-contain img{ object-fit:contain; }
+.gal__flag{ position:absolute; top:12px; left:12px; z-index:2; pointer-events:none; }
+.gal__flag .tag{ position:static; display:inline-block; }
+.gal__hint{
+  position:absolute; right:12px; top:12px; z-index:2; pointer-events:none;
+  width:40px; height:40px; display:grid; place-items:center; background:var(--white); color:var(--ink);
+}
+.gal__nav{ position:absolute; right:12px; bottom:12px; z-index:2; display:flex; gap:2px; }
+.gal__btn{ width:44px; height:44px; display:grid; place-items:center; background:var(--white); color:var(--ink); transition:background-color .2s, color .2s; }
+.gal__btn:hover:not(:disabled){ background:var(--ink); color:var(--white); }
+.gal__btn:disabled{ color:var(--strike); cursor:default; }
+.gal__count{ position:absolute; left:12px; bottom:12px; z-index:2; background:var(--ink); color:var(--white); padding:6px 8px 5px; font-size:12px; pointer-events:none; }
+.gal__dots{ display:none; }
+.gal__src{
+  grid-column:1 / -1; display:flex; align-items:center; gap:14px; flex-wrap:wrap;
+  padding-top:14px; font-size:13px; color:var(--muted);
+}
+.gal--multi .gal__src{ padding-left:calc(var(--thumb) + 12px); }
+.gal__src a{ color:var(--ink); text-decoration:underline; text-underline-offset:3px; }
+.gal__src a:hover{ text-decoration-thickness:2px; }
+.gal__src .sep{ width:4px; height:4px; background:var(--strike); }
+.gal__fabric{ display:flex; align-items:center; gap:10px; margin-right:6px; color:var(--ink); }
+.gal__fabric img{ width:44px; height:44px; object-fit:cover; background:var(--surface); }
+
+/* Buy panel */
+.buy__top{ display:flex; align-items:center; gap:14px; flex-wrap:wrap; margin-bottom:16px; }
+.buy__top .tag{ position:static; display:inline-block; }
+.buy__cat{ color:var(--muted); }
+.buy__cat:hover{ color:var(--ink); text-decoration:underline; text-underline-offset:4px; }
+.buy__name{ font-size:clamp(48px, 4.4vw, 76px); overflow-wrap:break-word; hyphens:manual; }
+.buy__price{ display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; margin-top:20px; font-size:24px; }
+.buy__price .price__old{ font-size:17px; }
+.buy__save{ align-self:center; background:var(--ink); color:var(--white); padding:5px 7px 4px; font-stretch:75%; font-weight:700; font-size:12px; letter-spacing:.06em; }
+.buy__fit{ margin-top:6px; }
+.buy__form{ display:grid; gap:28px; margin-top:32px; padding-top:28px; border-top:1px solid var(--ink); }
+.buy .field legend{ justify-content:flex-start; }
+.buy .field legend .val{ margin-left:2px; }
+.buy .field legend .val:not(:empty)::before{ content:"· "; color:var(--strike); }
+.sizef{ position:relative; }
+.buy__guide{
+  position:absolute; right:0; top:-12px; display:inline-flex; align-items:center; gap:8px; min-height:40px;
+  font-size:14px; font-weight:600; text-decoration:underline; text-decoration-thickness:1px; text-underline-offset:4px;
+}
+.buy__guide:hover{ text-decoration-thickness:2px; }
+.buy__guide .icon{ width:16px; height:16px; }
+.buy .opt--color span{ width:52px; height:52px; }
+.buy .opt span{ min-width:60px; height:52px; font-size:15px; }
+.buy .hint{ margin-top:10px; }
+.field.is-error legend .lt{ background:var(--accent); box-shadow:0 0 0 4px var(--accent); }
+.buy__ctas{ display:grid; gap:10px; }
+.buy__row{ display:grid; grid-template-columns:auto 1fr; gap:10px; }
+.buy__row .btn{ min-height:52px; }
+.buy__wa{ justify-self:start; display:inline-flex; align-items:center; gap:10px; min-height:44px; margin-top:2px; font-size:15px; font-weight:600; text-decoration:underline; text-decoration-thickness:1px; text-underline-offset:4px; }
+.buy__wa .icon{ width:20px; height:20px; }
+.buy__wa:hover{ text-decoration-thickness:2px; }
+.buy .info-rows{ margin-top:28px; }
+.buy .info-rows li{ padding:12px 0; }
+.btn.is-done{ background:var(--ink); color:var(--white); border-color:var(--ink); }
+
+/* Accordions */
+.pdp__more .acc__body p + ul{ margin-top:14px; }
+
+/* Rails */
+.rail-sec{ padding-block:0 var(--sec); }
+.rail-sec .sec-head{ margin-bottom:28px; }
+.rail-title{ font-size:clamp(44px, 5.4vw, 88px); }
+
+/* Not found */
+.nf{ display:grid; grid-template-columns:1fr auto; gap:32px 64px; align-items:end; padding:clamp(24px, 4vw, 56px) 0 var(--sec); border-bottom:1px solid var(--line); margin-bottom:var(--sec); }
+.nf__title{ font-size:clamp(72px, 13vw, 208px); }
+.nf__title span{ display:inline-block; background:var(--accent); padding:.08em .12em 0; transform:rotate(-1.5deg); transform-origin:left bottom; margin-top:.04em; }
+.nf__text{ display:grid; gap:20px; max-width:380px; padding-bottom:12px; }
+.nf__text p{ font-size:17px; line-height:1.5; }
+.nf__ctas{ display:grid; gap:10px; }
+
+/* Size guide drawer */
+.guide__fit{ display:grid; grid-template-columns:auto 1fr; gap:4px 14px; padding:16px; background:var(--surface); font-size:15px; }
+.guide__fit b{ font-stretch:75%; font-weight:800; text-transform:uppercase; letter-spacing:.04em; }
+.guide .table tbody tr.is-sel{ background:var(--accent); }
+.guide .table tbody tr.is-sel th::after{ content:" · seçili"; font-weight:500; font-stretch:100%; font-size:12px; letter-spacing:0; text-transform:none; }
+.guide__how{ display:grid; gap:10px; font-size:15px; }
+.guide__how li{ display:grid; grid-template-columns:28px 1fr; gap:8px; }
+.guide__how b{ font-stretch:75%; font-weight:800; }
+
+/* Lightbox */
+.lb__count{ font-size:13px; color:rgba(255,255,255,.7); }
+.lb__body{ position:relative; display:grid; grid-template-columns:64px 1fr 64px; align-items:center; min-height:0; padding-bottom:24px; }
+.lb__fig{ display:grid; grid-template-rows:1fr auto; place-items:center; gap:14px; height:100%; min-height:0; min-width:0; }
+.lb__fig img{ width:100%; height:100%; object-fit:contain; min-height:0; }
+.lb__fig figcaption{ font-size:13px; color:rgba(255,255,255,.66); text-align:center; padding-inline:16px; }
+.lb__btn{ width:48px; height:48px; display:grid; place-items:center; justify-self:center; color:var(--white); border:1px solid rgba(255,255,255,.3); }
+.lb__btn:hover:not(:disabled){ background:var(--white); color:var(--ink); }
+.lb__btn:disabled{ opacity:.3; cursor:default; }
+
+/* Mobile sticky buy bar */
+.pbar{ display:none; }
+
+@media (max-width:899px){
+  .pdp{
+    grid-template-columns:minmax(0, 1fr); grid-template-areas:"gal" "buy" "more";
+    row-gap:28px; --stage-h:auto;
+  }
+  .pdp__buy{ position:static; max-width:none; }
+  .pdp__more{ max-width:none; }
+  .gal, .gal--single{ grid-template-columns:minmax(0, 1fr); margin-inline:calc(var(--pad) * -1); }
+  .gal__thumbs{ display:none; }
+  .gal__stage{ width:100%; height:auto; aspect-ratio:4/5; }
+  .gal__zoom.is-contain img{ object-fit:cover; }
+  .gal__nav, .gal__hint{ display:none; }
+  .gal__dots{ display:flex; justify-content:center; gap:6px; padding-top:12px; }
+  .gal__dots span{ width:24px; height:3px; background:var(--line); transition:background-color .2s; }
+  .gal__dots span.is-on{ background:var(--ink); }
+  .gal__src, .gal--multi .gal__src{ padding:12px var(--pad) 0; }
+  .gal__src{ gap:8px 18px; }
+  .gal__src .sep{ display:none; }
+  .gal__fabric{ flex-basis:100%; }
+  .buy__name{ font-size:clamp(44px, 13vw, 64px); }
+  .buy__price{ margin-top:14px; font-size:22px; }
+  .buy__form{ margin-top:24px; padding-top:22px; gap:24px; }
+  .buy .opts--size .opt span{ min-width:0; width:100%; }
+  .buy .opts--size{ display:grid; grid-template-columns:repeat(5, 1fr); }
+  .nf{ grid-template-columns:1fr; }
+  .nf__title{ font-size:clamp(52px, 15.5vw, 120px); }
+
+  .pbar{
+    position:fixed; left:0; right:0; bottom:0; z-index:42;
+    display:grid; grid-template-columns:1fr auto; align-items:center; gap:12px;
+    padding:10px 10px calc(10px + env(safe-area-inset-bottom)) var(--pad);
+    background:var(--white); border-top:1px solid var(--ink);
+    transform:translateY(100%); visibility:hidden;
+    transition:transform .28s var(--ease), visibility 0s linear .28s;
+  }
+  .pbar.is-on{ transform:none; visibility:visible; transition:transform .28s var(--ease), visibility 0s; }
+  .pbar__info{ min-width:0; display:grid; gap:2px; }
+  .pbar__price{ font-weight:700; font-size:17px; font-variant-numeric:tabular-nums; white-space:nowrap; }
+  .pbar__price .price__old{ font-size:13px; }
+  .pbar__sel{ font-size:13px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .pbar__sel.is-warn{ color:var(--ink); font-weight:600; }
+  .pbar .btn{ min-height:48px; padding:0 20px; }
+  body.has-pbar .wa-float{ bottom:calc(84px + env(safe-area-inset-bottom)); }
+  body.has-pbar .toast{ bottom:calc(84px + env(safe-area-inset-bottom)); }
+  body.has-pbar .footer{ padding-bottom:72px; }
+
+  .lb__body{ grid-template-columns:1fr; }
+  .lb__btn{ display:none; }
+}
+@media (max-width:899px) and (min-width:600px){
+  .gal__stage{ aspect-ratio:auto; height:min(720px, 80svh); }
+}
+@media (prefers-reduced-motion:reduce){
+  .pbar{ transition:none!important; }
+}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 21 21"/></symbol>
+  <symbol id="i-bag" viewBox="0 0 24 24"><path d="M4 8h16l-1 13H5L4 8Z"/><path d="M8.5 8V6.5a3.5 3.5 0 0 1 7 0V8"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4 12h15M13 6l6 6-6 6"/></symbol>
+  <symbol id="i-arrow-l" viewBox="0 0 24 24"><path d="M20 12H5M11 6l-6 6 6 6"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="M5 5l14 14M19 5 5 19"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M3 8h18M3 16h18"/></symbol>
+  <symbol id="i-pause" viewBox="0 0 24 24"><path d="M8 5v14M16 5v14"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 5l12 7-12 7V5Z"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></symbol>
+  <symbol id="i-truck" viewBox="0 0 24 24"><path d="M2 6h12v10H2zM14 10h4l3 3v3h-7"/><circle cx="6" cy="18" r="1.8"/><circle cx="17" cy="18" r="1.8"/></symbol>
+  <symbol id="i-store" viewBox="0 0 24 24"><path d="M3 9l1.5-5h15L21 9M3 9h18M3 9v11h18V9M9 20v-6h6v6"/></symbol>
+  <symbol id="i-swap" viewBox="0 0 24 24"><path d="M4 8h14l-3-3M20 16H6l3 3"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/></symbol>
+  <symbol id="i-zoom" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 21 21M10.5 7.5v6M7.5 10.5h6"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></symbol>
+  <symbol id="i-ig" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18"/><circle cx="12" cy="12" r="4"/><path d="M17.5 6.5h.01"/></symbol>
+  <symbol id="i-reel" viewBox="0 0 24 24"><path d="M8 5v14l11-7L8 5Z"/></symbol>
+  <symbol id="i-wa" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.050 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></symbol>
+</svg>
+<!-- page-local icons (not in shared sprite yet) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="i-filter" viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><path d="M14 4.5v5M6 14.5v5"/><rect x="14" y="5" width="4" height="4"/><rect x="6" y="15" width="4" height="4"/></symbol>
+  <symbol id="i-ruler" viewBox="0 0 24 24"><path d="M3 8h18v8H3z"/><path d="M7 8v3M11 8v4M15 8v3M19 8v2"/></symbol>
+</svg>
+
+<a class="skip" href="#main">İçeriğe geç</a>
+
+<!-- Duyuru bandı (shared) -->
+<div class="marquee" role="region" aria-label="Duyurular">
+  <div class="marquee__viewport">
+    <div class="marquee__track">
+      <ul class="marquee__list">
+        <li>2.999 TL ve üzeri ücretsiz kargo</li>
+        <li>7 yıllık tecrübe</li>
+        <li>WhatsApp'tan sipariş</li>
+        <li>İsmimiz kalitemiz</li>
+        <li>2.999 TL ve üzeri ücretsiz kargo</li>
+        <li>7 yıllık tecrübe</li>
+        <li>WhatsApp'tan sipariş</li>
+        <li>İsmimiz kalitemiz</li>
+      </ul>
+      <ul class="marquee__list" aria-hidden="true">
+        <li>2.999 TL ve üzeri ücretsiz kargo</li>
+        <li>7 yıllık tecrübe</li>
+        <li>WhatsApp'tan sipariş</li>
+        <li>İsmimiz kalitemiz</li>
+        <li>2.999 TL ve üzeri ücretsiz kargo</li>
+        <li>7 yıllık tecrübe</li>
+        <li>WhatsApp'tan sipariş</li>
+        <li>İsmimiz kalitemiz</li>
+      </ul>
+    </div>
+  </div>
+  <button class="marquee__toggle" type="button" aria-pressed="false" aria-label="Kayan duyuruyu durdur">
+    <svg class="icon i-pause" aria-hidden="true"><use href="#i-pause"/></svg>
+    <svg class="icon icon--fill i-play" aria-hidden="true"><use href="#i-play"/></svg>
+  </button>
+</div>
+
+<!-- Header (shared; home adds header--overlay) -->
+<header class="header" id="top">
+  <div class="wrap header__inner">
+    <div class="header__left">
+      <nav class="nav" aria-label="Ana menü">
+        <a href="koleksiyon.html?kat=fleece">Fleece</a>
+        <a href="koleksiyon.html?kat=esofman">Takım</a>
+        <a href="koleksiyon.html?kat=ceket">Ceket</a>
+        <a href="koleksiyon.html?kat=sweat">Sweat</a>
+        <a href="magaza.html">Mağaza</a>
+      </nav>
+      <button class="hbtn menu-btn" type="button" data-open="menu" aria-haspopup="dialog">
+        <svg class="icon" aria-hidden="true"><use href="#i-menu"/></svg><span class="label-text">Menü</span>
+      </button>
+    </div>
+    <a class="wordmark" href="index.html" aria-label="Monark Wear ana sayfa">MONARK</a>
+    <div class="header__right">
+      <button class="hbtn hbtn--search" type="button" data-open="search" aria-haspopup="dialog">
+        <svg class="icon" aria-hidden="true"><use href="#i-search"/></svg><span class="label-text">Ara</span>
+      </button>
+      <button class="hbtn" type="button" data-open="cart" aria-haspopup="dialog" aria-label="Sepet, 0 ürün">
+        <svg class="icon" aria-hidden="true"><use href="#i-bag"/></svg><span class="label-text">Sepet</span><span class="count tnum" data-cart-count aria-hidden="true">0</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+  <div class="wrap pdp-shell">
+    <nav class="crumbs pdp-crumbs" aria-label="Konum"><ol id="crumbs"><li><a href="index.html">Ana Sayfa</a></li><li><a href="koleksiyon.html">Koleksiyon</a></li></ol></nav>
+
+    <article class="pdp" id="pdp" hidden aria-labelledby="p-name">
+      <div class="pdp__gal" id="gal"></div>
+
+      <div class="pdp__buy buy" id="buy">
+        <div class="buy__top" id="b-top"></div>
+        <h1 class="buy__name display" id="p-name"></h1>
+        <p class="buy__price" id="b-price"></p>
+        <p class="buy__fit small" id="b-fit"></p>
+
+        <form class="buy__form" id="buy-form" novalidate>
+          <fieldset class="field" id="f-color">
+            <legend class="label"><span class="lt">Renk</span><span class="val" id="color-val"></span></legend>
+            <div class="opts" id="colors"></div>
+          </fieldset>
+
+          <div class="sizef">
+          <fieldset class="field" id="f-size" aria-describedby="size-hint">
+            <legend class="label"><span class="lt">Beden</span><span class="val" id="size-val"></span></legend>
+            <div class="opts opts--size" id="sizes"></div>
+            <p class="hint" id="size-hint" aria-live="assertive"></p>
+          </fieldset>
+            <button class="buy__guide" type="button" id="guide-btn" aria-haspopup="dialog"><svg class="icon" aria-hidden="true"><use href="#i-ruler"/></svg>Beden Rehberi</button>
+          </div>
+
+          <div class="buy__ctas">
+            <div class="buy__row">
+              <div id="qty-wrap"></div>
+              <button class="btn btn--accent" type="submit" id="add-btn"><svg class="icon" aria-hidden="true"><use href="#i-bag"/></svg><span>Sepete Ekle</span></button>
+            </div>
+            <button class="btn btn--ink btn--block" type="button" id="buy-now">Hemen Al <svg class="icon icon--arrow" aria-hidden="true"><use href="#i-arrow"/></svg></button>
+            <a class="buy__wa" id="wa-ask" href="https://wa.me/905000000000" target="_blank" rel="noopener"><svg class="icon icon--fill" aria-hidden="true"><use href="#i-wa"/></svg>WhatsApp'tan Sor</a>
+          </div>
+        </form>
+
+        <ul class="info-rows">
+          <li><svg class="icon" aria-hidden="true"><use href="#i-truck"/></svg><div><b>2.999 TL üzeri ücretsiz kargo</b><span>Altındaki siparişlerde kargo ücreti ödeme adımında hesaplanır.</span></div></li>
+          <li><svg class="icon" aria-hidden="true"><use href="#i-store"/></svg><div><b>Mağazadan teslim al</b><span>Uğra, dene, al. <a href="magaza.html">Mağaza bilgisi</a></span></div></li>
+          <li><svg class="icon" aria-hidden="true"><use href="#i-swap"/></svg><div><b>Kolay değişim</b><span>Değişim koşulları için <a href="yardim.html#kargo-iade">yardım sayfası</a>.</span></div></li>
+        </ul>
+      </div>
+
+      <div class="pdp__more">
+        <div class="acc-group" id="accs"></div>
+      </div>
+    </article>
+
+    <section class="nf" id="nf" hidden aria-labelledby="nf-title">
+      <h1 class="nf__title display" id="nf-title">Ürün<br><span>Bulunamadı.</span></h1>
+      <div class="nf__text">
+        <p>Aradığın ürün kaldırılmış ya da bağlantı hatalı olabilir. Koleksiyona göz at ya da WhatsApp'tan sor.</p>
+        <div class="nf__ctas">
+          <a class="btn btn--accent" href="koleksiyon.html">Koleksiyonu Gör <svg class="icon icon--arrow" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+          <button class="btn btn--outline" type="button" data-open="search" aria-haspopup="dialog"><svg class="icon" aria-hidden="true"><use href="#i-search"/></svg> Ürün Ara</button>
+          <a class="tlink" href="https://wa.me/905000000000" data-wa="Merhaba, aradığım bir ürün var." target="_blank" rel="noopener" style="justify-self:start">WhatsApp'tan Sor</a>
+        </div>
+      </div>
+    </section>
+
+    <noscript><p class="small" style="padding-block:40px">Ürün detayını görmek için JavaScript gerekli. <a href="https://www.shopier.com/monarkwear" style="text-decoration:underline">Shopier mağazamıza</a> göz atabilirsin.</p></noscript>
+  </div>
+
+  <section class="rail-sec" id="rel" aria-labelledby="rel-title" hidden>
+    <div class="wrap pdp-shell">
+      <div class="sec-head">
+        <h2 class="display rail-title" id="rel-title">Bunlar da İlgini Çekebilir</h2>
+        <a class="tlink" id="rel-all" href="koleksiyon.html">Tümünü Gör <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+      </div>
+      <ul class="rail" id="rel-rail"></ul>
+    </div>
+  </section>
+
+  <section class="rail-sec" id="recent" aria-labelledby="recent-title" hidden>
+    <div class="wrap pdp-shell">
+      <div class="sec-head">
+        <h2 class="display rail-title" id="recent-title">Son Baktıkların</h2>
+      </div>
+      <ul class="rail" id="recent-rail"></ul>
+    </div>
+  </section>
+</main>
+
+<!-- Beden rehberi -->
+<dialog class="drawer guide" id="guide" aria-labelledby="guide-title">
+  <span class="grab" aria-hidden="true"></span>
+  <div class="drawer__head">
+    <h2 class="label" id="guide-title" tabindex="-1">Beden Rehberi</h2>
+    <button class="xbtn" type="button" data-close aria-label="Beden rehberini kapat"><svg class="icon" aria-hidden="true"><use href="#i-close"/></svg></button>
+  </div>
+  <div class="drawer__body">
+    <div class="guide__fit" id="guide-fit"></div>
+    <div>
+      <div class="table-wrap">
+        <table class="table">
+          <caption class="sr-only">Beden ölçüleri, santimetre</caption>
+          <thead><tr><th scope="col">Beden</th><th scope="col">Göğüs</th><th scope="col">Boy</th><th scope="col">Kol</th></tr></thead>
+          <tbody id="guide-rows"></tbody>
+        </table>
+      </div>
+      <p class="note" style="margin-top:12px">Ölçüler cm, ürün düz zeminde serilerek alınır. Demo değerlerdir <span class="ph">[Müşteri tarafından onaylanacak]</span></p>
+    </div>
+    <div class="guide__how">
+      <p class="label">Nasıl ölçülür?</p>
+      <ol class="guide__how">
+        <li><b>01</b><span>Göğüs: koltuk altından koltuk altına, düz ölç ve ikiyle çarp.</span></li>
+        <li><b>02</b><span>Boy: omuz dikişinin en üstünden etek ucuna kadar.</span></li>
+        <li><b>03</b><span>Kol: omuz dikişinden manşet ucuna kadar.</span></li>
+      </ol>
+    </div>
+  </div>
+  <div class="drawer__foot">
+    <a class="btn btn--outline" id="guide-wa" href="https://wa.me/905000000000" target="_blank" rel="noopener"><svg class="icon icon--fill" aria-hidden="true"><use href="#i-wa"/></svg> Bedenimi WhatsApp'tan Sor</a>
+  </div>
+</dialog>
+
+<!-- Lightbox -->
+<dialog class="lightbox" id="lb" aria-label="Ürün görselleri">
+  <div class="lightbox__head">
+    <span class="lb__count label tnum" id="lb-count"></span>
+    <button class="xbtn" type="button" data-close aria-label="Görseli kapat"><svg class="icon" aria-hidden="true"><use href="#i-close"/></svg></button>
+  </div>
+  <div class="lb__body">
+    <button class="lb__btn" type="button" id="lb-prev" aria-label="Önceki görsel"><svg class="icon" aria-hidden="true"><use href="#i-arrow-l"/></svg></button>
+    <figure class="lb__fig">
+      <img id="lb-img" src="data:image/gif;base64,R0lGODlhAQABAAAAACw=" alt="">
+      <figcaption id="lb-cap"></figcaption>
+    </figure>
+    <button class="lb__btn" type="button" id="lb-next" aria-label="Sonraki görsel"><svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></button>
+  </div>
+</dialog>
+
+<!-- Mobil yapışkan satın alma çubuğu -->
+<div class="pbar" id="pbar" aria-hidden="true">
+  <div class="pbar__info">
+    <span class="pbar__price" id="pbar-price"></span>
+    <span class="pbar__sel" id="pbar-sel"></span>
+  </div>
+  <button class="btn btn--accent" type="button" id="pbar-add" tabindex="-1">Sepete Ekle</button>
+</div>
+
+<!-- Footer (shared) -->
+<footer class="footer on-dark">
+  <div class="wrap">
+    <div class="fcols">
+      <div class="fcol">
+        <h2 class="label">Alışveriş</h2>
+        <ul>
+          <li><a href="koleksiyon.html?kat=fleece">Fleece</a></li>
+          <li><a href="koleksiyon.html?kat=esofman">Eşofman Takımı</a></li>
+          <li><a href="koleksiyon.html?kat=ceket">Ceket</a></li>
+          <li><a href="koleksiyon.html?kat=sweat">Sweatshirt</a></li>
+          <li><a href="koleksiyon.html?kat=hoodie">Hoodie</a></li>
+          <li><a href="koleksiyon.html">Tüm Ürünler</a></li>
+        </ul>
+      </div>
+      <div class="fcol">
+        <h2 class="label">Yardım</h2>
+        <ul>
+          <li><a href="yardim.html#sss">Sıkça Sorulanlar</a></li>
+          <li><a href="yardim.html#kargo-iade">Kargo &amp; Değişim</a></li>
+          <li><a href="yardim.html#beden-rehberi">Beden Rehberi</a></li>
+          <li><a href="yardim.html#iletisim">İletişim</a></li>
+          <li><span>2.999 TL ve üzeri ücretsiz kargo</span></li>
+        </ul>
+      </div>
+      <div class="fcol">
+        <h2 class="label">Mağaza</h2>
+        <ul>
+          <li><a href="magaza.html">Mağazamız</a></li>
+          <li><span class="ph">[Adres eklenecek]</span></li>
+          <li><span class="ph">[Çalışma saatleri eklenecek]</span></li>
+        </ul>
+      </div>
+      <div class="fcol">
+        <h2 class="label">Sipariş &amp; Takip</h2>
+        <ul>
+          <li><a href="https://wa.me/905000000000" data-wa="Merhaba, sipariş vermek istiyorum." target="_blank" rel="noopener">WhatsApp'tan Sipariş</a></li>
+          <li><a href="https://www.shopier.com/monarkwear" target="_blank" rel="noopener">Shopier Mağazası</a></li>
+          <li><a href="https://www.instagram.com/monarkwearcom/" target="_blank" rel="noopener">Instagram · @monarkwearcom</a></li>
+          <li><span>42,1B takipçi</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="fbar">
+      <span>© 2026 Monark Wear · İsmimiz Kalitemiz</span>
+      <span>Fiyatlar, yorumlar ve bazı görseller demo amaçlıdır.</span>
+    </div>
+  </div>
+  <div class="fmark" aria-hidden="true"><span class="display">Monark</span></div>
+</footer>
+
+<a class="wa-float" href="https://wa.me/905000000000" data-wa="Merhaba, bilgi almak istiyorum." target="_blank" rel="noopener" aria-label="WhatsApp'tan yaz">
+  <svg class="icon icon--fill" aria-hidden="true"><use href="#i-wa"/></svg>
+</a>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/site.js"></script>
+<script>
+(function(){
+  "use strict";
+  var M = window.Monark; if (!M) return;
+  function $(id){ return document.getElementById(id); }
+  var esc = M.esc, icon = M.icon;
+
+  /* Demo size chart (cm) — keep in sync with yardim.html#beden-rehberi */
+  var CHART = [
+    { s:"S",   g:104, b:68, k:62 },
+    { s:"M",   g:110, b:70, k:63 },
+    { s:"L",   g:116, b:72, k:64 },
+    { s:"XL",  g:122, b:74, k:65 },
+    { s:"XXL", g:128, b:76, k:66 }
+  ];
+  var FIT_NOTE = {
+    Boxy:"Kısa boy, geniş omuz. Normal bedenini al; daha bol istersen bir büyük.",
+    Oversize:"Bol kesim. Normal bedenini al; daha oturan istersen bir küçük.",
+    Regular:"Standart kesim. Normal bedenini al."
+  };
+
+  var id = new URLSearchParams(location.search).get("id");
+  var p = id ? M.getProduct(id) : null;
+  var recentBefore = M.recent.list();
+
+  /* ---------- Rails (shared by product + not-found) ---------- */
+  function rail(sec, ul, items){
+    if (!items.length){ $(sec).hidden = true; return; }
+    $(ul).innerHTML = items.map(function(x){ return M.renderCard(x); }).join("");
+    $(sec).hidden = false;
+  }
+
+  if (!p){ notFound(); return; }
+
+  /* ---------- Head ---------- */
+  var cat = M.getCategory(p.cat);
+  document.title = p.name + " — Monark Wear | Demo";
+  var md = document.querySelector('meta[name="description"]'); if (md) md.setAttribute("content", p.name + ". " + p.desc);
+  $("crumbs").innerHTML = '<li><a href="index.html">Ana Sayfa</a></li>' +
+    (cat ? '<li><a href="' + M.categoryUrl(cat.id) + '">' + esc(cat.name) + '</a></li>' : '<li><a href="koleksiyon.html">Koleksiyon</a></li>') +
+    '<li aria-current="page">' + esc(p.name) + '</li>';
+  $("pdp").hidden = false;
+  if (p.images.length < 2) $("pdp").classList.add("pdp--single");
+
+  /* ---------- Gallery ---------- */
+  var imgs = p.images, N = imgs.length, cur = 0;
+  function fitClass(im){
+    // contain when cover would crop/upscale too much (e.g. 9:16 IG stories in a 4:5 bed)
+    if (!im.w || !im.h) return "";
+    var a = im.w / im.h, s = .8;
+    return Math.max(a / s, s / a) > 1.3 ? " is-contain" : "";
+  }
+  function src(im, w){ return M.imgSrc(im, w); }
+  (function buildGallery(){
+    var g = $("gal");
+    var thumbs = N > 1 ? '<ul class="gal__thumbs" aria-label="Görseller">' + imgs.map(function(im, i){
+      return '<li><button class="gal__thumb" type="button" data-go="' + i + '" aria-label="Görsel ' + (i + 1) + ' / ' + N + '"' + (i === 0 ? ' aria-current="true"' : "") + '><img src="' + src(im, 200) + '" alt="" width="72" height="90"' + (im.pos ? ' style="object-position:' + im.pos + '"' : "") + '></button></li>';
+    }).join("") + '</ul>' : "";
+    var slides = imgs.map(function(im, i){
+      return '<li class="gal__slide"' + (N > 1 ? ' aria-label="' + (i + 1) + ' / ' + N + '" role="group" aria-roledescription="görsel"' : "") + '>' +
+        '<button class="gal__zoom' + fitClass(im) + '" type="button" data-zoom="' + i + '" aria-label="Görseli büyüt: ' + esc(im.alt || p.name) + '">' +
+          '<img src="' + src(im, 1200) + '" alt="' + esc(im.alt || p.name) + '"' + (im.w ? ' width="' + im.w + '" height="' + im.h + '"' : ' width="1200" height="1500"') + (i ? ' loading="lazy"' : ' fetchpriority="high"') + (im.pos ? ' style="object-position:' + im.pos + '"' : "") + '>' +
+        '</button></li>';
+    }).join("");
+    var flag = p.stock ? '<span class="gal__flag"><span class="tag tag--ink">Temsili görsel</span></span>' : "";
+    var nav = N > 1 ? '<div class="gal__nav"><button class="gal__btn" type="button" data-step="-1" aria-label="Önceki görsel" disabled>' + icon("arrow-l") + '</button><button class="gal__btn" type="button" data-step="1" aria-label="Sonraki görsel">' + icon("arrow") + '</button></div>' +
+      '<span class="gal__count label tnum" aria-hidden="true" id="gal-count">1 / ' + N + '</span>' : "";
+    var dots = N > 1 ? '<div class="gal__dots" aria-hidden="true">' + imgs.map(function(_, i){ return '<span' + (i === 0 ? ' class="is-on"' : "") + '></span>'; }).join("") + '</div>' : "";
+
+    // honest source strip (no fake extra angles)
+    var srcBits = [];
+    if (p.swatchThumb) srcBits.push('<span class="gal__fabric"><img src="' + src(p.swatchThumb) + '" alt="" width="44" height="44">' + esc(p.swatchThumb.alt || "Kumaş detayı") + '</span>');
+    if (p.stock) srcBits.push('<span>Temsili görsel. Ürünün gerçek fotoğrafı için <a href="' + M.waLink("Merhaba, " + p.name + " ürününün gerçek fotoğrafını görebilir miyim?") + '" target="_blank" rel="noopener">WhatsApp\'tan iste</a>.</span>');
+    else {
+      srcBits.push('<span>Fotoğraf: ' + esc(M.config.igHandle || "@monarkwearcom") + '</span>');
+      if (p.ig) srcBits.push('<span class="sep" aria-hidden="true"></span><a href="' + p.ig + '" target="_blank" rel="noopener">' + (p.ig.indexOf("/reel/") > -1 ? "Videoyu Instagram'da izle" : "Gönderiyi Instagram'da gör") + '</a>');
+      if (N === 1) srcBits.push('<span class="sep" aria-hidden="true"></span><a href="' + M.waLink("Merhaba, " + p.name + " için farklı açılardan fotoğraf görebilir miyim?") + '" target="_blank" rel="noopener">Farklı açı iste</a>');
+    }
+
+    g.innerHTML = '<div class="gal ' + (N > 1 ? "gal--multi" : "gal--single") + '">' + thumbs +
+      '<div class="gal__stage">' + flag +
+        '<ul class="gal__track" id="gal-track"' + (N > 1 ? ' aria-label="Ürün görselleri, kaydırılabilir"' : "") + '>' + slides + '</ul>' +
+        '<span class="gal__hint" aria-hidden="true">' + icon("zoom") + '</span>' + nav +
+      '</div>' + dots +
+      '<p class="gal__src">' + srcBits.join("") + '</p>' +
+    '</div>';
+  })();
+
+  var track = $("gal-track");
+  function go(i, smooth){
+    i = Math.max(0, Math.min(N - 1, i));
+    track.scrollTo({ left:i * track.clientWidth, behavior:(smooth === false || M.reducedMotion) ? "auto" : "smooth" });
+    setCur(i);
+  }
+  function setCur(i){
+    cur = i;
+    [].forEach.call(document.querySelectorAll(".gal__thumb"), function(t, k){ t.setAttribute("aria-current", String(k === i)); });
+    [].forEach.call(document.querySelectorAll(".gal__dots span"), function(d, k){ d.classList.toggle("is-on", k === i); });
+    var btns = document.querySelectorAll(".gal__btn");
+    if (btns.length){ btns[0].disabled = i === 0; btns[1].disabled = i === N - 1; }
+    var c = $("gal-count"); if (c) c.textContent = (i + 1) + " / " + N;
+  }
+  if (N > 1){
+    var raf = 0;
+    track.addEventListener("scroll", function(){
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(function(){ var i = Math.round(track.scrollLeft / Math.max(1, track.clientWidth)); if (i !== cur) setCur(i); });
+    }, { passive:true });
+    $("gal").addEventListener("click", function(e){
+      var t = e.target.closest("[data-go]"); if (t){ go(+t.getAttribute("data-go")); return; }
+      var s = e.target.closest(".gal__btn"); if (s && !s.disabled) go(cur + Number(s.getAttribute("data-step")));
+    });
+    track.addEventListener("keydown", function(e){
+      if (e.key === "ArrowRight"){ e.preventDefault(); go(cur + 1); var b = track.querySelectorAll(".gal__zoom")[cur]; if (b) b.focus({ preventScroll:true }); }
+      if (e.key === "ArrowLeft"){ e.preventDefault(); go(cur - 1); var b2 = track.querySelectorAll(".gal__zoom")[cur]; if (b2) b2.focus({ preventScroll:true }); }
+    });
+    window.addEventListener("resize", function(){ track.scrollLeft = cur * track.clientWidth; });
+  }
+
+  /* ---------- Lightbox ---------- */
+  var lb = $("lb"), lbImg = $("lb-img"), lbI = 0;
+  function lbShow(i){
+    lbI = Math.max(0, Math.min(N - 1, i));
+    var im = imgs[lbI];
+    lbImg.src = src(im, 1600);
+    lbImg.alt = im.alt || p.name;
+    // never upscale IG sources past ~1.4x
+    if (im.w){ lbImg.style.maxWidth = Math.round(im.w * 1.4) + "px"; lbImg.style.maxHeight = Math.round(im.h * 1.4) + "px"; }
+    else { lbImg.style.maxWidth = ""; lbImg.style.maxHeight = ""; }
+    $("lb-cap").textContent = (im.alt || p.name) + (p.stock ? "" : " · " + (M.config.igHandle || ""));
+    $("lb-count").textContent = N > 1 ? (lbI + 1) + " / " + N : p.name;
+    $("lb-prev").disabled = lbI === 0; $("lb-next").disabled = lbI === N - 1;
+    $("lb-prev").hidden = $("lb-next").hidden = N < 2;
+  }
+  $("gal").addEventListener("click", function(e){
+    var z = e.target.closest("[data-zoom]"); if (!z) return;
+    lbShow(+z.getAttribute("data-zoom"));
+    M.openDialog(lb, z);
+    setTimeout(function(){ lb.querySelector("[data-close]").focus(); }, 0);
+  });
+  $("lb-prev").addEventListener("click", function(){ lbShow(lbI - 1); });
+  $("lb-next").addEventListener("click", function(){ lbShow(lbI + 1); });
+  lb.addEventListener("keydown", function(e){
+    if (e.key === "ArrowLeft"){ e.preventDefault(); lbShow(lbI - 1); }
+    if (e.key === "ArrowRight"){ e.preventDefault(); lbShow(lbI + 1); }
+  });
+  var tx = null;
+  lb.addEventListener("touchstart", function(e){ tx = e.touches[0].clientX; }, { passive:true });
+  lb.addEventListener("touchend", function(e){
+    if (tx == null) return; var dx = e.changedTouches[0].clientX - tx; tx = null;
+    if (Math.abs(dx) > 50) lbShow(lbI + (dx < 0 ? 1 : -1));
+  });
+  lb.addEventListener("close", function(){ if (N > 1 && lbI !== cur) go(lbI, false); });
+
+  /* ---------- Buy panel ---------- */
+  var sizes = M.sizesOf(p), anyAvail = sizes.some(function(s){ return s.available; });
+  var sel = { color:p.colors[0].name, size:null };
+
+  $("b-top").innerHTML = (p.badge ? '<span class="tag' + (p.badge === "SINIRLI" ? " tag--ink" : "") + '">' + esc(p.badge) + '</span>' : "") +
+    (cat ? '<a class="buy__cat label" href="' + M.categoryUrl(cat.id) + '">' + esc(cat.name) + '</a>' : "");
+  $("p-name").textContent = p.name;
+  var save = p.oldPrice && p.oldPrice > p.price ? Math.round((p.oldPrice - p.price) / p.oldPrice * 100) : 0;
+  $("b-price").innerHTML = '<span class="price">' + M.priceHTML(p) + '</span>' + (save ? '<span class="buy__save">−%' + save + '</span>' : "");
+  $("b-fit").textContent = "Kalıp: " + p.fit + (p.stock ? " · Görsel temsilidir" : "");
+
+  $("colors").innerHTML = p.colors.map(function(c, i){
+    return '<label class="opt opt--color" title="' + esc(c.name) + '"><input type="radio" name="renk" value="' + esc(c.name) + '"' + (i === 0 ? " checked" : "") + '><span><i style="background:' + c.hex + '" aria-hidden="true"></i><b class="sr-only">' + esc(c.name) + '</b></span></label>';
+  }).join("");
+  $("sizes").innerHTML = sizes.map(function(s){
+    return '<label class="opt"><input type="radio" name="beden" value="' + s.size + '"' + (s.available ? "" : " disabled") + ' aria-describedby="size-hint"><span>' + s.size + (s.available ? "" : '<b class="sr-only"> — tükendi</b>') + '</span></label>';
+  }).join("");
+  $("qty-wrap").innerHTML = M.qtyHTML(1, { large:true, label:"Adet" });
+
+  var soldNote = sizes.filter(function(s){ return !s.available; }).length
+    ? "Üstü çizili bedenler tükendi. Gelince haber almak için WhatsApp'tan yaz." : "";
+  var hint = $("size-hint");
+  function setHint(msg, warn){ hint.textContent = msg; hint.classList.toggle("is-warn", !!warn); }
+  setHint(soldNote, false);
+  if (!anyAvail){
+    setHint("Bu ürünün tüm bedenleri şu an tükendi. WhatsApp'tan sor, gelince haber verelim.", true);
+    ["add-btn","buy-now","pbar-add"].forEach(function(k){ $(k).setAttribute("aria-disabled", "true"); });
+  }
+
+  function updateSel(){
+    $("color-val").textContent = sel.color;
+    $("size-val").textContent = sel.size || "";
+    $("pbar-sel").textContent = sel.color + " · " + (sel.size ? sel.size + " beden" : "Beden seçilmedi");
+    $("pbar-sel").classList.toggle("is-warn", !sel.size && $("f-size").classList.contains("is-error"));
+    $("wa-ask").href = M.waLink(
+      "Merhaba, bu ürün hakkında bilgi almak istiyorum:\n" + p.name + " (" + M.formatPrice(p.price) + ")\n" +
+      "Renk: " + sel.color + "\nBeden: " + (sel.size || "henüz seçmedim") + "\n" + location.href);
+    $("guide-wa").href = M.waLink("Merhaba, " + p.name + " için beden danışmak istiyorum. Boyum: , kilom: ");
+    [].forEach.call($("guide-rows").querySelectorAll("tr"), function(r){ r.classList.toggle("is-sel", r.getAttribute("data-s") === sel.size); });
+  }
+  $("f-color").addEventListener("change", function(e){ sel.color = e.target.value; updateSel(); });
+  $("f-size").addEventListener("change", function(e){
+    sel.size = e.target.value;
+    $("f-size").classList.remove("is-error");
+    $("sizes").classList.remove("is-invalid");
+    setHint(soldNote, false);
+    updateSel();
+  });
+
+  function sizeError(fromBar){
+    var f = $("f-size");
+    f.classList.add("is-error"); $("sizes").classList.add("is-invalid");
+    setHint("Lütfen beden seç.", true);
+    updateSel();
+    var first = $("sizes").querySelector("input:not(:disabled)");
+    if (fromBar){
+      f.scrollIntoView({ block:"center", behavior:M.reducedMotion ? "auto" : "smooth" });
+      setTimeout(function(){ if (first) first.focus({ preventScroll:true }); }, M.reducedMotion ? 0 : 350);
+    } else if (first) first.focus();
+  }
+  function qty(){ var v = parseInt(document.querySelector("#qty-wrap .qty__val").value, 10); return v > 0 ? v : 1; }
+  function add(fromBar){
+    if (!anyAvail) return null;
+    if (!sel.size){ sizeError(fromBar); return null; }
+    return M.cart.add(p.id, { size:sel.size, color:sel.color, qty:qty() });
+  }
+  var doneT = null;
+  $("buy-form").addEventListener("submit", function(e){
+    e.preventDefault();
+    var btn = $("add-btn"), line = add(false);
+    if (!line) return;
+    btn.classList.add("is-done"); btn.querySelector("span").textContent = "Sepete Eklendi";
+    clearTimeout(doneT); doneT = setTimeout(function(){ btn.classList.remove("is-done"); btn.querySelector("span").textContent = "Sepete Ekle"; }, 2200);
+    M.openCart(btn);
+  });
+  $("buy-now").addEventListener("click", function(){
+    var line = add(false);
+    if (line) location.href = "sepet.html";
+  });
+  $("pbar-add").addEventListener("click", function(){
+    var line = add(true);
+    if (line) M.openCart($("pbar-add"));
+  });
+
+  /* ---------- Size guide ---------- */
+  $("guide-rows").innerHTML = CHART.filter(function(r){ return p.sizes && r.s in p.sizes; }).map(function(r){
+    return '<tr data-s="' + r.s + '"><th scope="row">' + r.s + '</th><td>' + r.g + ' cm</td><td>' + r.b + ' cm</td><td>' + r.k + ' cm</td></tr>';
+  }).join("");
+  $("guide-fit").innerHTML = '<b>' + esc(p.fit) + '</b><span>' + esc(FIT_NOTE[p.fit] || FIT_NOTE.Regular) + '</span>';
+  $("guide-btn").addEventListener("click", function(){
+    M.openDialog($("guide"), this);
+    $("guide-title").focus();
+  });
+
+  /* ---------- Accordions ---------- */
+  var care = p.details.filter(function(d){ return /^(Kumaş|Bakım|Kalıp)/.test(d); });
+  var info = p.details.filter(function(d){ return care.indexOf(d) === -1; });
+  $("accs").innerHTML =
+    '<details class="acc" open><summary class="acc__sum">Ürün Açıklaması' + icon("chev") + '</summary><div class="acc__body">' +
+      '<p>' + esc(p.desc) + '</p>' +
+      '<ul>' + info.map(function(d){ return '<li>' + esc(d) + '</li>'; }).join("") +
+        '<li>Renkler: ' + esc(p.colors.map(function(c){ return c.name; }).join(", ")) + '</li></ul>' +
+    '</div></details>' +
+    '<details class="acc"><summary class="acc__sum">Kumaş &amp; Bakım' + icon("chev") + '</summary><div class="acc__body">' +
+      '<ul>' + (care.length ? care : ["Kumaş bilgisi için WhatsApp'tan sorabilirsin."]).map(function(d){ return '<li>' + esc(d) + '</li>'; }).join("") + '</ul>' +
+    '</div></details>' +
+    '<details class="acc"><summary class="acc__sum">Kargo &amp; Değişim' + icon("chev") + '</summary><div class="acc__body">' +
+      '<ul><li>2.999 TL ve üzeri siparişlerde kargo ücretsiz.</li>' +
+      '<li>Siparişini sepette WhatsApp ile ya da Shopier güvencesiyle ödeyerek tamamlarsın.</li>' +
+      '<li>Kargoya veriliş süresi: <span class="ph">[Müşteri tarafından onaylanacak]</span></li>' +
+      '<li>Değişim koşulları için <a href="yardim.html#kargo-iade" style="text-decoration:underline;text-underline-offset:3px">yardım sayfasına</a> bak.</li></ul>' +
+    '</div></details>';
+
+  updateSel();
+
+  /* ---------- Sticky panel: stick to bottom when taller than viewport ---------- */
+  var buy = $("buy"), mqDesk = window.matchMedia("(min-width:900px)");
+  function stick(){
+    if (!mqDesk.matches){ buy.style.removeProperty("--stick"); return; }
+    var hh = document.querySelector(".header").offsetHeight;
+    var t = Math.min(hh + 24, window.innerHeight - buy.offsetHeight - 24);
+    buy.style.setProperty("--stick", t + "px");
+  }
+  stick(); window.addEventListener("resize", stick);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(stick);
+
+  /* ---------- Mobile sticky bar ---------- */
+  var pbar = $("pbar");
+  $("pbar-price").innerHTML = M.priceHTML(p);
+  if ("IntersectionObserver" in window){
+    var mainVisible = true, footVisible = false;
+    function pbarState(){
+      var on = !mqDesk.matches && !mainVisible && !footVisible;
+      pbar.classList.toggle("is-on", on);
+      pbar.setAttribute("aria-hidden", String(!on));
+      $("pbar-add").tabIndex = on ? 0 : -1;
+      document.body.classList.toggle("has-pbar", on);
+    }
+    new IntersectionObserver(function(en){ mainVisible = en[0].isIntersecting; pbarState(); }).observe($("add-btn"));
+    new IntersectionObserver(function(en){ footVisible = en[0].isIntersecting; pbarState(); }, { rootMargin:"0px 0px -40% 0px" }).observe(document.querySelector(".footer"));
+    if (mqDesk.addEventListener) mqDesk.addEventListener("change", pbarState);
+  }
+
+  /* ---------- Rails ---------- */
+  var mine = p.cats || [p.cat];
+  var others = M.data.products.filter(function(x){ return x.id !== p.id; });
+  var same = others.filter(function(x){ return (x.cats || [x.cat]).some(function(c){ return mine.indexOf(c) > -1; }); });
+  var rest = others.filter(function(x){ return same.indexOf(x) === -1; });
+  rail("rel", "rel-rail", same.concat(rest).slice(0, 8));
+  if (cat) $("rel-all").href = M.categoryUrl(cat.id);
+  rail("recent", "recent-rail", recentBefore.filter(function(r){ return r !== p.id; }).map(M.getProduct).filter(Boolean).slice(0, 8));
+  M.recent.add(p.id);
+
+  /* ---------- Not found ---------- */
+  function notFound(){
+    document.title = "Ürün bulunamadı — Monark Wear | Demo";
+    $("crumbs").innerHTML = '<li><a href="index.html">Ana Sayfa</a></li><li><a href="koleksiyon.html">Koleksiyon</a></li><li aria-current="page">Ürün bulunamadı</li>';
+    $("nf").hidden = false;
+    $("rel-title").textContent = "Yeni Gelenler";
+    var fresh = M.data.products.slice().sort(function(a, b){ return (b.added || "").localeCompare(a.added || ""); });
+    rail("rel", "rel-rail", fresh.slice(0, 8));
+    rail("recent", "recent-rail", recentBefore.map(M.getProduct).filter(Boolean).slice(0, 8));
+    $("pbar").remove();
+  }
+})();
+</script>
+</body>
+</html>
