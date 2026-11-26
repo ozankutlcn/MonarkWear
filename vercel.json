@@ -1,0 +1,6 @@
+{
+  "rewrites": [
+    { "source": "/", "destination": "/ui-system/pilots/monarkwear/A-saha/index.html" },
+    { "source": "/:path((?!ui-system/).*)", "destination": "/ui-system/pilots/monarkwear/A-saha/:path" }
+  ]
+}
